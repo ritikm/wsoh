@@ -106,6 +106,7 @@ var Locochat = function() {
     messages.onAdd(messageAdded);
 
     initChat();
+    initMap();
 
     // TESTING
 
@@ -124,6 +125,18 @@ var Locochat = function() {
       watchLocation(updateLocation);
       /*setInterval(addRandomMessage, 2000);*/
     });
+  }
+
+  function initMap() {
+    var latlng = new google.maps.LatLng(37.4137347, -122.0777919);
+    var myOptions = {
+      zoom: 19,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    this.map = new google.maps.Map(document.getElementById("map-canvas"),
+        myOptions);
+    this.markers = [];
   }
 
   function mockUpdateLocation() {
@@ -149,32 +162,50 @@ var Locochat = function() {
   }
 
   function render() {
-    canvas = $('#radar');
-    w = canvas.width(); h = canvas.height();
-    ctx = canvas[0].getContext('2d');
-
-    ctx.fillStyle = "#000033";
-    ctx.fillRect(0, 0, w, h);
-
-    allusers = users.getAll();
+    for (var i = 0; i < this.markers.length; ++i) {
+      this.markers[i].setMap(null);
+    }
+    this.markers = [];
     for (var userid in users.getAll()) {
       var u = users.findById(userid);
-      /*console.log("Hi user "+userid);console.log(u);*/
-      var pos = myUser.computeXY(u.lat, u.lng);
-      ctx.fillStyle = "red";
-      circle(ctx, pos.x, pos.y, 5);
+      var mk = new google.maps.Marker({
+        position: new google.maps.LatLng(u.lat, u.lng),
+        map: this.map, 
+        title: u.name
+      });
+      this.markers.push(mk);
     }
 
-    allmsgs = messages.getAll();
-    for (var i = 0; i < allmsgs.length; ++i) {
-      var m = allmsgs[i];
-      var pos = myUser.computeXY(m.lat, m.lng);
-      ctx.fillStyle = "yellow";
-      circle(ctx, pos.x, pos.y, 5);
-    }
 
-    ctx.fillStyle = "green";
-    circle(ctx, w/2, h/2, 5);
+
+    if(false) {
+      canvas = $('#radar');
+      w = canvas.width(); h = canvas.height();
+      ctx = canvas[0].getContext('2d');
+
+      ctx.fillStyle = "#000033";
+      ctx.fillRect(0, 0, w, h);
+
+      allusers = users.getAll();
+      for (var userid in users.getAll()) {
+        var u = users.findById(userid);
+        /*console.log("Hi user "+userid);console.log(u);*/
+        var pos = myUser.computeXY(u.lat, u.lng);
+        ctx.fillStyle = "red";
+        circle(ctx, pos.x, pos.y, 5);
+      }
+
+      allmsgs = messages.getAll();
+      for (var i = 0; i < allmsgs.length; ++i) {
+        var m = allmsgs[i];
+        var pos = myUser.computeXY(m.lat, m.lng);
+        ctx.fillStyle = "yellow";
+        circle(ctx, pos.x, pos.y, 5);
+      }
+
+      ctx.fillStyle = "green";
+      circle(ctx, w/2, h/2, 5);
+    }
   }
 
   var PopupMessagesView = Class.extend({
