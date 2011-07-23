@@ -42,10 +42,11 @@ everyone.now.initUser = function() {
           console.log(util.inspect(err, true));
           return;
         }
-        
+        console.log('Got resutls');
+        console.log(util.inspect(result, true));
         that.now.nearbyUsers = result;
         
-        console.log(result);
+        // console.log(result);
     });
   });
 }
