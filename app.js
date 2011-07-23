@@ -66,6 +66,9 @@ app.get('/', function(req, res){
 app.dynamicHelpers({
     params: function(req, res) {
       return req.params;
+    },
+    session: function(req, res) {
+      return req.session;
     }
 });
 
