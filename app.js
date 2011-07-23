@@ -30,7 +30,7 @@ everyone.now.initUser = function() {
       return;
     }
     
-    Users.find({
+    User.find({
       location: {
         $near : [this.now.lat, this.now.lng],
         $spherical : true,
