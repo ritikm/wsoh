@@ -132,6 +132,7 @@ var Locochat = function() {
 
     messages.onAdd(messageAdded);
 
+    initChat();
 
     // TESTING
 
@@ -161,7 +162,7 @@ var Locochat = function() {
   function addRandomMessage() {
     console.log("Adding random message");
 
-    messages.add(new Message(myUser.userId, "HI", myUser.lat, myUser.lng, new Date()));
+    /*messages.add(new Message(myUser.userId, "HI", myUser.lat, myUser.lng, new Date()));*/
   }
 
   function render() {
@@ -243,6 +244,29 @@ var Locochat = function() {
     messageArea.scrollTop(messageArea[0].scrollHeight);
 
     popups.showPopupMessage(e.message);
+  }
+
+  function initChat() {
+    $('#chat').keydown(function(e) {
+      if (e.keyCode == 13) { // enter
+        var msg = $('#chat').val();
+
+        if (msg) {
+          console.log("SEND: "+msg);
+          // TODO send to server
+          messages.add(new Message(myUser.userId, msg, myUser.lat, myUser.lng, new Date()));
+        }
+
+        $('#chat').val('');
+        return false;
+      } else if (e.keyCode == 27) { // escape
+        $('#chat').val('');
+        return false;
+      }
+    });
+    $('#message-list').click(function() {
+      $('#chat').focus();
+    });
   }
   
   return {
