@@ -17,7 +17,7 @@ var Messages = new mongoose.Schema({
 var Users = new mongoose.Schema({
   userId : String,
   name : String,
-  location : { lat: Number, lng: Number },
+  location : [Number],
   messages : [Messages],
   loggedIn : { type: Boolean, default: true, index: true }
 });
