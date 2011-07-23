@@ -29,6 +29,7 @@ function setCoords(lat, lng, accuracy) {
   now.lng = lng;
   now.accuracy = accuracy;
   locationSet = true;
+  console.log(now);
   now.initUser();
   console.log("init user");
   console.log(now);
