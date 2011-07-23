@@ -9,7 +9,7 @@ var test = new Schema({
 });
 
 var Messages = new mongoose.Schema({
-  location : { lat: Number, lng: Number },
+  location : [Number],
   user : mongoose.ObjectId,
   time : Number
 });
