@@ -172,7 +172,8 @@ var Locochat = function() {
       var mk = new google.maps.Marker({
 position: new google.maps.LatLng(u.lat, u.lng),
 map: map,
-title: u.name
+title: u.name,
+icon: 'http://www.lurkerking.com/images/person2.png'
 });
 this.markers.push(mk);
     }
@@ -254,7 +255,7 @@ this.markers.push(mk);
     /*li.append(users.findById(e.message.userId).lat + "  " +*/
     /*users.findById(e.message.userId).lng + " ");*/
     li.append(e.message.body);
-    $('#message-list').append(li);
+    $('#message-list').prepend(li);
     messageArea = $('#messages');
     messageArea.scrollTop(messageArea[0].scrollHeight);
 
@@ -348,7 +349,7 @@ this.markers.push(mk);
 
 function haha(message) {
   if (message.text.indexOf("pix") != -1)
-    message.text += '<img src="http://www.mediaevent.de/repos/2008/xhtml/stifte.jpg" />';
+    message.text += '<img width=200 height=200 src="http://www.mediaevent.de/repos/2008/xhtml/stifte.jpg" />';
 
 message.text.replace(/(https?:\/\/)?(www\.)?(youtu\.be\/|youtube\.com(\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})\b/,
 '<object width="425" height="344"> <param name="movie" value="http://www.youtube.com/v/$5?fs=1"</param> <param name="allowFullScreen" value="true"></param> <param name="allowScriptAccess" value="always"></param> <embed src="http://www.youtube.com/v/$5?fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" width="425" height="344"> </embed> </object>');
