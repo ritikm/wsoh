@@ -1,7 +1,6 @@
-
 /**
- * Module dependencies.
- */
+* Module dependencies.
+*/
 
 var express = require('express');
 var util = require('util');
@@ -9,6 +8,8 @@ var util = require('util');
 var async = require('async');
 
 var stateVars = {};
+
+var maxDistance = 5;
 
 var app = module.exports = express.createServer();
 
@@ -45,55 +46,81 @@ everyone.now.initUser = function(lat, lng, name) {
   newUser.userId = this.user.clientId;
   newUser.name = name;
   newUser.save(function(err, user) {
-    if(errorCheck(err, 'User Save Error')) {
-      
-      nowjs.getClient(user.userId, function() {
-          stateVars[this.user.clientId] = user['_id'];
-        // console.log('doc=' + util.inspect(doc, true));
-        // console.log('this.now=' + util.inspect(this.now, true));
-        // console.log('doc._id=' + doc['_id']);
-        // this.user
-        // this.now.clientId = doc['_id'].toString();
-      });
-      
-      
-      giveNearbyUsersToClient(user);
-      
-    
-
-  }
-});
+      if(errorCheck(err, 'User Save Error')) {
+        
+        nowjs.getClient(user.userId, function() {
+            stateVars[this.user.clientId].id = doc['_id'];
+            // console.log('doc=' + util.inspect(doc, true));
+            // console.log('this.now=' + util.inspect(this.now, true));
+            // console.log('doc._id=' + doc['_id']);
+            // this.user
+            // this.now.clientId = doc['_id'].toString();
+        });
+        
+        
+        giveNearbyUsersToClient(user);
+        
+        
+        
+      }
+  });
 };
 var giveNearbyUsersToClient = function (user) {
   User.find({
-        location: {
-          $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
-          $maxDistance: 5
-        },
-        loggedIn: true
+      location: {
+        $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
+        $maxDistance: 5
+      },
+      loggedIn: true
+  }, function(err, results) {
+    if (errorCheck(err, 'Database Error')) {
+      // console.log('Got results');
+      // console.log(util.inspect(results, true));
+      nowjs.getClient(user.userId, function() {
+          this.now.onNearbyUsersUpdated(results)
+      });
+      
+      async.forEach(results, function(element, index) {
+          nowjs.getClient(element.userId, function() {
+              this.now.onUserJoined(user);
+          });
+      });
+      
+    }
+  });
+};
+
+
+
+everyone.now.move = function(lat, lng) {
+  User.findById(stateVars[this.user.clientId].id, function (error, user) {
+      user.location = {
+        lat: lat,
+        lng: lng
+      };
+      
+      stateVars[user.userId].lat = lat;
+      stateVars[user.userId].lng = lng;
+      
+      user.save();
+      User.find({
+          location: {
+            $near: [lat, lng],
+            $maxDistance: maxDistance
+          },
+          loggedIn: true
       }, function(err, results) {
         if (errorCheck(err, 'Database Error')) {
-            // console.log('Got results');
-            // console.log(util.inspect(results, true));
-            nowjs.getClient(user.userId, function() {
-              this.now.onNearbyUsersUpdated(results)
-            });
-            
-            async.forEach(results, function(element, index) {
-                
+          console.log('Got results');
+          console.log(util.inspect(results, true));
+          async.forEach(results, function(element, index) {
               nowjs.getClient(element.userId, function() {
-                this.now.onUserJoined(user);
+                  this.now.onUserMoved(user);
               });
-            });
-            
-          }
+          });
+        }
       });
-    };
-
-    
-    
-everyone.now.move = function(lat, lng) {
-  
+  });
 };
 
 everyone.now.unloadUser = function() {
@@ -101,6 +128,24 @@ everyone.now.unloadUser = function() {
     if (errorCheck(err, 'Unload User Error')) {
       user.loggedIn = false;
       user.save();
+      
+      User.find({
+        location: {
+          $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
+          $maxDistance: 5
+        },
+        loggedIn: true
+      }, function(err, results) {
+        if (errorCheck(err, 'Database Error')) {
+          console.log('Got results');
+          console.log(util.inspect(results, true));
+          async.forEach(results, function(element, index) {
+            nowjs.getClient(element.userId, function() {
+              this.now.onUserLeft(user, message);
+            });
+          });
+        }
+      });
     }
   });
 };
@@ -108,37 +153,37 @@ everyone.now.unloadUser = function() {
 everyone.now.sendMessage = function(message) {
   console.log('message: ' + message);
   
-  User.find({
-      userId: this.user.clientId
-  }, function (error, user) {
-    User.find({
+  User.findById(stateVars[this.user.clientId].id, function (err, user) {
+    if (errorCheck(err, 'Send Message Error')) {
+      User.find({
         location: {
-          $near: [stateVars[this.user.clientId].lat, stateVars[this.user.clientId].lng],
-          $maxDistance: 5
+          $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
+          $maxDistance: maxDistance
         },
         loggedIn: true
       }, function(err, results) {
         if (errorCheck(err, 'Database Error')) {
-            console.log('Got results');
-            console.log(util.inspect(results, true));
-            async.forEach(results, function(element, index) {
-              nowjs.getClient(element.userId, function() {
-                this.now.onChatRecieved(user, message);
-              });
+          console.log('Got results');
+          console.log(util.inspect(results, true));
+          async.forEach(results, function(element, index) {
+            nowjs.getClient(element.userId, function() {
+              this.now.onChatRecieved(user, message);
             });
-          }
+          });
+        }
       });
-    
-    var message = new Message();
-    message.location = {
-      lat: stateVars[user.userId].lat,
-      lng: stateVars[user.userId].lng
-    };
-    message.time = new Date().getTime();
-    message.user = user;
-    message.text = message;
-    message.save();
-  });
+      
+      var message = new Message();
+      message.location = {
+        lat: stateVars[user.userId].lat,
+        lng: stateVars[user.userId].lng
+      }
+      message.time = new Date().getTime()
+      message.user = user;
+      message.text = message;
+      message.save();
+    }
+  }
 };
 
 // Configuration
@@ -158,19 +203,20 @@ app.configure(function(){
 // Routes
 
 app.get('/', function(req, res){
-  res.render('index', {
-    title: 'Express'
-  });
+    res.render('index', {
+        title: 'Express'
+    });
 });
 
 app.dynamicHelpers({
-    params: function(req, res) {
-      return req.params;
-    },
-    session: function(req, res) {
-      return req.session;
-    }
+  params: function(req, res) {
+    return req.params;
+  },
+  session: function(req, res) {
+    return req.session;
+  }
 });
 
 app.listen(3000);
 console.log('Server listening on port %d in %s mode', app.address().port, app.settings.env);
+
