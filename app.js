@@ -29,11 +29,13 @@ everyone.now.initUser = function() {
       return;
     }
     
-    mongoose.connection.db.executeDbCommand({
-      geoNear : 'Users',
-      near : [this.now.lat, this.now.lng], 
-      spherical : true,
-      maxDistance : 5
+    Users.find({
+      location: {
+        $near : { [this.now.lat, this.now.lng] },
+        $spherical : true,
+        $maxDistance : 5
+      },
+      loggedIn: true
     }, function(err, result) {
         if (err) {
           console.log('Database Error:');
