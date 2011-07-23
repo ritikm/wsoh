@@ -105,7 +105,7 @@ everyone.now.unloadUser = function() {
   });
 };
 
-everyone.now.distribute = function(message) {
+everyone.now.sendMessage = function(message) {
   console.log('message: ' + message);
   
   User.find({
@@ -123,7 +123,7 @@ everyone.now.distribute = function(message) {
             console.log(util.inspect(results, true));
             async.forEach(results, function(element, index) {
               nowjs.getClient(element.userId, function() {
-                this.now.broadcast(user, message);
+                this.now.onChatRecieved(user, message);
               });
             });
           }
