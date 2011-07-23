@@ -36,7 +36,7 @@ everyone.now.initUser = function() {
   newUser.save(function(err, doc) {
     if(errorCheck(err, 'User Save Error')) {
        console.log(util.inspect(doc, true));
-      //that.now.id = doc._id;
+      that.now.stid = doc._id;
       User.find({
         location: {
           $near: [that.now.lat, that.now.lng],
