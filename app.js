@@ -6,10 +6,11 @@ var express = require('express');
 var util = require('util');
 
 var async = require('async');
+var _ = require('underscore');
 
-var stateVars = {};
+var connectedUsers = {}; // { clientId => { userId, lat, lng, name } }
 
-var maxDistance = 5;
+var MAX_DISTANCE = 5;
 
 var app = module.exports = express.createServer();
 
@@ -28,162 +29,133 @@ var errorCheck = function(err, data) {
   return true;
 };
 
-everyone.now.initUser = function(lat, lng, name) {
+everyone.now.initUser = function(lat, lng, accuracy, name) {
   console.log('In initUser');
   var that = this;
   console.log(this.user.clientId);
   
-  var newUser = new User();
+  var user = connectedUsers[this.user.clientId];
+  user.lat = lat;
+  user.lng = lng;
+  user.name = name;
+  user.isInitialized = true;
   
-  stateVars[this.user.clientId] = {
-    userId: this.user.clientId,
-    lat: lat,
-    lng: lng,
-    name: name
-  };
-  
-  newUser.location.lat = lat;
-  newUser.location.lng = lng;
-  newUser.userId = this.user.clientId;
-  newUser.name = name;
-  
-  newUser.save(function(err, user) {
-      if(errorCheck(err, 'User Save Error')) {
-        nowjs.getClient(user.userId, function() {
-            stateVars[this.user.clientId].id = user['_id'];
-        });
-        
-        giveNearbyUsersToClient(user);
-      }
-  });
+  giveNearbyUsersToClient(user);
 };
+
+function dist(u1, u2) {
+  var y = (u1.lat - u2.lat);
+  var x = (u1.lng - u2.lng);
+  return Math.sqrt((y*y)+(x*x));
+}
 
 var giveNearbyUsersToClient = function (user) {
-  User.find({
-      location: {
-        $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
-        $maxDistance: 5
-      },
-      loggedIn: true
-  }, function(err, results) {
-    if (errorCheck(err, 'Database Error')) {
-      nowjs.getClient(user.userId, function() {
-          this.now.onNearbyUsersUpdated(results)
-      });
-      
-      async.forEach(results, function(element, index) {
-          nowjs.getClient(element.userId, function() {
-              this.now.onUserJoined(user);
-          });
-      });
-      
-    }
+  var nearby = getNearbyUsers(user);
+  /*_.each(connectedUsers, function(possibleNearbyUser) {*/
+  /*if (!possibleNearbyUser.isInitialized)*/
+  /*return;*/
+
+  /*if (dist(user, possibleNearbyUser) < MAX_DISTANCE) {*/
+  /*nearby.push(possibleNearbyUser);*/
+  /*nowjs.getClient(possibleNearbyUser.userId, function() {*/
+  /*this.now.onUserJoined(user);*/
+  /*});*/
+  /*}*/
+  /*});*/
+
+  nowjs.getClient(user.userId, function() {
+      if (!this.now)
+        return;
+      this.now.onNearbyUsersUpdated(nearby);
   });
 };
 
-everyone.now.move = function(lat, lng) {
+function getNearbyUsers(toUser) {
+  return _.select(connectedUsers, function(potential) {
+        if (!potential || !potential.isInitialized)
+          return;
+
+        return dist(potential, toUser) < MAX_DISTANCE;
+      });
+}
+
+everyone.now.move = function(lat, lng, accuracy) {
   console.log("Client id "+this.user.clientId);
-  console.log("Moving user "+stateVars[this.user.clientId].id);
-  User.findById(stateVars[this.user.clientId].id, function (err, user) {
-    if (errorCheck(err, 'Database Error')) {
-      console.log(user);
-      user.location = {
-        lat: lat,
-        lng: lng
-      };
-      
-      stateVars[user.userId].lat = lat;
-      stateVars[user.userId].lng = lng;
-      
-      user.save();
 
-giveNearbyUsersToClient(user); // TESTING
+  var myUser = connectedUsers[this.user.clientId];
+  if (!myUser || !myUser.isInitialized)
+    return;
+  myUser.lat = lat;
+  myUser.lng = lng;
 
-      // Tell our neighbors we moved.
-      User.find({
-          location: {
-            $near: [lat, lng],
-            $maxDistance: maxDistance
-          },
-          loggedIn: true
-      }, function(err, results) {
-        if (errorCheck(err, 'Database Error')) {
-          console.log('Got results');
-          console.log(util.inspect(results, true));
-          async.forEach(results, function(element, index) {
-              nowjs.getClient(element.userId, function() {
-                  this.now.onUserMoved(user);
-              });
-          });
-        }
-      });
-    }
+  giveNearbyUsersToClient(myUser); // TESTING
+
+  // Tell our neighbors we moved.
+  var nearby = getNearbyUsers(myUser);
+  _.each(nearby, function (u) {
+    nowjs.getClient(u.userId, function() {
+      giveNearbyUsersToClient(u); // TESTING
+      /*this.now.onUserMoved(myUser);*/
+    });
   });
 };
 
-everyone.now.disconnect = function() {
-  var currentVars = stateVars[this.user.clientId];
-  delete stateVars[this.user.clientId];
-  User.findById(currentVars.id, function (err, user) {
-    if (errorCheck(err, 'Unload User Error')) {
-      user.loggedIn = false;
-      user.save();
-      
-      User.find({
-        location: {
-          $near: [currentVars.lat, currentVars.lng],
-          $maxDistance: 5
-        },
-        loggedIn: true
-      }, function(err, results) {
-        if (errorCheck(err, 'Database Error')) {
-          console.log('Got results');
-          console.log(util.inspect(results, true));
-          async.forEach(results, function(element, index) {
-            nowjs.getClient(element.userId, function() {
-              this.now.onUserLeft(user);
-            });
-          });
-        }
-      });
-    }
-  });
-};
+nowjs.on('connect', function () {
+  for (var i = 0; i < 50; ++i)
+    console.log("CONNECT "+  this.user.clientId);
+  connectedUsers[this.user.clientId] = {
+    userId: this.user.clientId,
+    name: "Guest"
+  };
+});
 
-everyone.now.sendMessage = function(message) {
-  console.log('------------------------------message: ' + message);
+nowjs.on('disconnect', function() {
+  var myUser = connectedUsers[this.user.clientId];
+  if (!myUser || !myUser.isInitialized)
+    return;
+
+  // tell everyone nearby that i'm gone
+  var nearby = getNearbyUsers(myUser);
+  _.each(nearby, function (u) {
+    nowjs.getClient(u.userId, function() {
+        this.now.onUserLeft(myUser);
+    });
+  });
+});
+
+everyone.now.sendMessage = function(text) {
+  console.log('message: ' + text);
   
-  User.findById(stateVars[this.user.clientId].id, function (err, user) {
-    if (errorCheck(err, 'Send Message Error')) {
-      User.find({
-        location: {
-          $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
-          $maxDistance: maxDistance
-        },
-        loggedIn: true
-      }, function(err, results) {
-        if (errorCheck(err, 'Database Error')) {
-          console.log('Got results');
-          console.log(util.inspect(results, true));
-          async.forEach(results, function(element, index) {
-            nowjs.getClient(element.userId, function() {
-              this.now.onChatReceived(user, message);
-            });
-          });
-        }
-      });
-      
-      var message = new Message();
-      message.location = {
-        lat: stateVars[user.userId].lat,
-        lng: stateVars[user.userId].lng
-      }
-      message.time = new Date().getTime();
-      message.user = user;
-      message.text = message;
-      message.save();
-    }
+  var myUser = connectedUsers[this.user.clientId];
+  if (!myUser || !myUser.isInitialized)
+    return;
+
+  var message = {
+    userId: myUser.userId,
+    text: text,
+    lat: myUser.lat,
+    lng: myUser.lng,
+    /*time:*/
+  };
+
+  // relay the message
+  var nearby = getNearbyUsers(myUser);
+  _.each(nearby, function (u) {
+    nowjs.getClient(u.userId, function() {
+      if (this.now)
+        this.now.onChatReceived(myUser, message);
+    });
   });
+
+  /*var message = new Message();*/
+  /*message.location = {*/
+  /*lat: connectedUsers[user.userId].lat,*/
+  /*lng: connectedUsers[user.userId].lng*/
+  /*}*/
+  /*message.time = new Date().getTime();*/
+  /*message.user = user;*/
+  /*message.text = message;*/
+  /*message.save();*/
 };
 
 // Configuration

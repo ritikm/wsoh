@@ -8,7 +8,7 @@ a {
 }
 
 #radar {
-  width: 480px;
+  /*width: 480px;*/
   float: left;
 }
 #messages {

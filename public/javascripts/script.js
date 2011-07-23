@@ -1,7 +1,7 @@
 
 var myUser;
 
-var pixels_per_degree = 100;
+var pixels_per_degree = 2000000;
 var Locochat = function() {
   var canvas, ctx;
   var w, h;
@@ -12,6 +12,16 @@ var Locochat = function() {
     },
     clear: function() {
       this.store = {};
+    },
+    findOrLearn: function(serverUser) {
+      if (! this.store[serverUser.userId]) {
+        this.store[serverUser.userId] = new User(
+          serverUser.userId, serverUser.name,
+          serverUser.lat, serverUser.lng, serverUser.accuracy
+        );
+      }
+
+      return this.store[serverUser.userId];
     },
     findById: function(userId) {
       return this.store[userId];
@@ -46,10 +56,10 @@ var Locochat = function() {
   });
 
   var User = Class.extend({
-    init: function(userId, name, lat, lng) {
+    init: function(userId, name, lat, lng, accuracy) {
       this.userId = userId;
       this.name = name;
-      this.setPosition(lat,lng);
+      this.setPosition(lat,lng, accuracy);
     },
 
     // compute XY screen coords of another geo point
@@ -58,9 +68,10 @@ var Locochat = function() {
               y: (this.lat - otherLat) * pixels_per_degree + h/2};
     },
 
-    setPosition: function (lat, lng) {
+    setPosition: function (lat, lng, accuracy) {
       this.lat = lat;
       this.lng = lng;
+      this.accuracy = accuracy;
     }
   });
   var Message = Class.extend({
@@ -88,40 +99,43 @@ var Locochat = function() {
   }
 
   function init() {
-    initNow();
-    
     myUser = new User(now.userId, "Me", 5, 5);
+    initNow();
 
-    users.add(myUser);
-
+    /*users.add(myUser);*/
     messages.onAdd(messageAdded);
 
     initChat();
 
     // TESTING
 
-    var david = new User(6, "David", 5, 5);
-    users.add(david);
-    users.add(new User(8, "Tony", 5, 5.5));
+    /*var david = new User(6, "David", 5, 5);*/
+    /*users.add(david);*/
+    /*users.add(new User(8, "Tony", 5, 5.5));*/
 
-    setTimeout(function (){
-      messages.add(new Message(david.userId, "I'm david", david.lat, david.lng, new Date()));
-    }, 1500);
+    /*setTimeout(function (){*/
+    /*messages.add(new Message(david.userId, "I'm david", david.lat, david.lng, new Date()));*/
+    /*}, 1500);*/
 
-    setInterval(mockUpdateLocation, 1000);
-    setInterval(addRandomMessage, 2000);
+    /*setInterval(mockUpdateLocation, 1000);*/
+    /*setInterval(_.bind(watchLocation, {}, updateLocation), 1000);*/
+
+    now.ready(function () {
+      watchLocation(updateLocation);
+      /*setInterval(addRandomMessage, 2000);*/
+    });
   }
 
   function mockUpdateLocation() {
     updateLocation(
       myUser.lat + 0.07,
-      myUser.lng - 0.05
+      myUser.lng - 0.05, 0.01
       /*myUser.lat + 0.05 + (Math.random() - 0.5) * 0.1,*/
       /*myUser.lng + 0.05 + (Math.random() - 0.5) * 0.1*/
     );
   }
-  function updateLocation(lat, lng) {
-    myUser.setPosition(lat, lng);
+  function updateLocation(lat, lng, accuracy) {
+    myUser.setPosition(lat, lng, accuracy);
     now.move(lat, lng);
 
     /*render();*/
@@ -139,18 +153,13 @@ var Locochat = function() {
     w = canvas.width(); h = canvas.height();
     ctx = canvas[0].getContext('2d');
 
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#000033";
     ctx.fillRect(0, 0, w, h);
-
-    ctx.fillStyle = "green";
-    circle(ctx, w/2, h/2, 5);
 
     allusers = users.getAll();
     for (var userid in users.getAll()) {
-      if (userid == myUser.userId)
-        continue;
       var u = users.findById(userid);
-      console.log("Hi user "+userid);console.log(u);
+      /*console.log("Hi user "+userid);console.log(u);*/
       var pos = myUser.computeXY(u.lat, u.lng);
       ctx.fillStyle = "red";
       circle(ctx, pos.x, pos.y, 5);
@@ -163,6 +172,9 @@ var Locochat = function() {
       ctx.fillStyle = "yellow";
       circle(ctx, pos.x, pos.y, 5);
     }
+
+    ctx.fillStyle = "green";
+    circle(ctx, w/2, h/2, 5);
   }
 
   var PopupMessagesView = Class.extend({
@@ -207,8 +219,10 @@ var Locochat = function() {
     var li = $('<li id="'+msgId+'" />');
     /*li.append(message.time+": ");*/
     /*console.log(e.message.userId);*/
-    li.append(e.message.userId + ": ");
-    /*li.append(users.findById(e.message.userId).name + ": ");*/
+    /*li.append(e.message.userId + ": ");*/
+    li.append(users.findById(e.message.userId).name + ": ");
+    li.append(users.findById(e.message.userId).lat + "  " +
+        users.findById(e.message.userId).lng + " ");
     li.append(e.message.body);
     $('#message-list').append(li);
     messageArea = $('#messages');
@@ -237,9 +251,9 @@ var Locochat = function() {
     });
   }
 
-  function sendChat(msg) {
-    console.log("SEND: "+msg);
-    now.sendMessage(msg);
+  function sendChat(text) {
+    console.log("SEND: "+text);
+    now.sendMessage(text);
 
     // TESTING
     /*messages.add(new Message(myUser.userId, msg, myUser.lat, myUser.lng, new Date()));*/
@@ -248,48 +262,52 @@ var Locochat = function() {
   
   function initNow() {
     now.ready(initialize);
-    var locationSet = false;
     $(window).bind('unload.now', function() {
       now.unloadUser();
     });
 
-    now.onUserJoined = function (dbUser) {
-      console.log("User joined: "+dbUser.userId+" / "+dbUser.name);
-      users.add(new User(dbUser.userId, dbUser.name,
-            dbUser.location.lat, dbUser.location.lng));
+    now.onUserJoined = function (serverUser) {
+      console.log("User joined: "+serverUser.userId+" / "+serverUser.name);
+      users.add(new User(serverUser.userId, serverUser.name,
+            serverUser.lat, serverUser.lng));
     };
-    now.onUserLeft = function (dbUser) {
-      console.log("User left: "+dbUser.userId);
-      users.remove(dbUser.userId);
+    now.onUserLeft = function (serverUser) {
+      console.log("User left: "+serverUser.userId);
+      users.remove(serverUser.userId);
     };
-    now.onUserMoved = function (dbUser) {
-      var u = users.findById(dbUser.userId);
-      console.log("User moved: "+dbUser.userId);
+    now.onUserMoved = function (serverUser) {
+      var u = users.findOrLearn(serverUser);
+      console.log("User moved: "+serverUser.userId);
       if (u) {
-        u.lat = dbUser.location.lat;
-        u.lng = dbUser.location.lng;
+        u.lat = serverUser.lat;
+        u.lng = serverUser.lng;
       } else {
-        console.log("Unknown user : "+dbUser.userId);
+        console.log("Unknown user : "+serverUser.userId);
       }
 
       render();
     };
     
-    now.onNearbyUsersUpdated = function (dbUsers) {
+    now.onNearbyUsersUpdated = function (serverUsers) {
       console.log("Users nearby updated");
       users.clear();
-      _.each(dbUsers, function(dbUser) {
-          users.add(new User(dbUser.userId, dbUser.name,
-              dbUser.location.lat, dbUser.location.lng));
+      _.each(serverUsers, function(serverUser) {
+          users.add(new User(serverUser.userId, serverUser.name,
+              serverUser.lat, serverUser.lng));
       });
+
+      /*var minX, maxX;*/
+      /*_.each(users, function (u) {*/
+      /*});*/
+
       render();
     };
     
-    now.onChatReceived = function (dbUser, message) {
-      console.log("chat from "+dbUser.userId);
+    now.onChatReceived = function (serverUser, message) {
+      console.log("chat from "+serverUser.userId);
       messages.add(new Message(
-            dbUser, message.text,
-            message.location.lat, message.location.lng,
+            serverUser.userId, message.text,
+            message.lat, message.lng,
             new Date()
             /*time*/
           ));
@@ -298,30 +316,27 @@ var Locochat = function() {
   
   function initialize() {
     console.log('In Initialize');
+
+    now.initUser(5, 5, 5, "My Name "+Math.random());
+  }
+
+  function watchLocation(callback) {
     if(navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      navigator.geolocation.watchPosition(
         function(position) {
           console.log("before set coord");
-          setCoords(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+          callback(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
         }, 
-        function() {
-          handleNoGeolocation(true);
+        function() { //failure
+          alert("No position");
+        }, {
+          enableHighAccuracy: true,
+          maximumAge: 1000
         });
     } else {
-      handleNoGeolocation(false);
+          alert("No position2");
+          /*setCoords(37.414346, -122.076902, 16);*/
     }
-    
-    function handleNoGeolocation(browserSupportFlag) {
-      now.noGeolocation = true;
-      now.browserSupportFlag = browserSupportFlag;
-      setCoords(37.414346, -122.076902, 16);
-    }
-  }
-  function setCoords(lat, lng, accuracy) {
-    console.log("in setCoords");
-    locationSet = true;
-    now.initUser(lat, lng, "My Name "+Math.random());
-    console.log("init user");
   }
 
   
