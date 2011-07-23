@@ -20,7 +20,7 @@ var app = module.exports = express.createServer();
 require('./models');
 
 var nowjs = require("now");
-var everyone = nowjs.initialize(app);
+var everyone = nowjs.initialize(app, {socketio: {'log level': 2}});
 
 var errorCheck = function(err, data) {
   if (err) {
@@ -104,8 +104,7 @@ everyone.now.move = function(lat, lng, accuracy) {
 };
 
 nowjs.on('connect', function () {
-  for (var i = 0; i < 50; ++i)
-    console.log("CONNECT "+  this.user.clientId);
+  console.log("CONNECT "+  this.user.clientId);
   connectedUsers[this.user.clientId] = {
     userId: this.user.clientId,
     name: "Guest"
