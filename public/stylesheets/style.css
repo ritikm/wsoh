@@ -9,12 +9,15 @@ a {
 
 #radar {
   /*width: 480px;*/
-  float: left;
+  /*float: left;*/
 }
 #messages {
   width: 300px;
-  float: left;
+  /*float: left;*/
   margin-left: 30px;
+}
+#message-list {
+  list-style: none;
 }
 
 #chat {

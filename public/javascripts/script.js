@@ -5,6 +5,7 @@ var pixels_per_degree = 2000000;
 var Locochat = function() {
   var canvas, ctx;
   var w, h;
+  var map;
 
   var UserStore = Class.extend({
     init: function() {
@@ -134,7 +135,7 @@ var Locochat = function() {
       center: latlng,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-    this.map = new google.maps.Map(document.getElementById("map-canvas"),
+    map = new google.maps.Map(document.getElementById("map-canvas"),
         myOptions);
     this.markers = [];
   }
@@ -169,13 +170,12 @@ var Locochat = function() {
     for (var userid in users.getAll()) {
       var u = users.findById(userid);
       var mk = new google.maps.Marker({
-        position: new google.maps.LatLng(u.lat, u.lng),
-        map: this.map, 
-        title: u.name
-      });
-      this.markers.push(mk);
+position: new google.maps.LatLng(u.lat, u.lng),
+map: map,
+title: u.name
+});
+this.markers.push(mk);
     }
-
 
 
     if(false) {
@@ -212,35 +212,34 @@ var Locochat = function() {
     init: function() {
       this.store = {}; // user ID => { model: Message object, el: DOM element }
     },
-    _positionMessage: function(message, el) {
-      var u = users.findById(message.userId);
-      var pos = myUser.computeXY(message.lat, message.lng);
-      el.css({ position: 'absolute',
-        top: pos.y,
-        left: pos.x
-      });
-    },
+    /*_positionMessage: function(message, el) {*/
+    /*var u = users.findById(message.userId);*/
+    /*var pos = myUser.computeXY(message.lat, message.lng);*/
+    /*el.css({ position: 'absolute',*/
+      /*top: pos.y,*/
+      /*left: pos.x*/
+      /*});*/
+    /*},*/
     showPopupMessage: function(message) {
       if (this.store[message.userId] !== undefined)
-        this.store[message.userId].el.remove();
+        this.store[message.userId].el.setMap(null);
 
-      var div = $('<div class="popup-message" />');
-      div.append(message.body);
-
-      this._positionMessage(message, div);
-      $('#popup-messages').append(div);
+      var mk = new google.maps.Marker({
+        position: new google.maps.LatLng(message.lat, message.lng),
+        map: map,
+        title: message.body
+      });
+      var iw = new google.maps.InfoWindow({ content: message.body});
+      iw.open(map, mk);
 
       this.store[message.userId] = {
         model: message,
-        el: div
+        el: mk
       };
     },
 
     updatePositions: function() {
-      for (var userid in this.store) {
-        var lastMessage = this.store[userid];
-        this._positionMessage(lastMessage.model, lastMessage.el);
-      }
+                       // do nothing
     },
   });
   var popups = new PopupMessagesView();
@@ -251,9 +250,9 @@ var Locochat = function() {
     /*li.append(message.time+": ");*/
     /*console.log(e.message.userId);*/
     /*li.append(e.message.userId + ": ");*/
-    li.append(users.findById(e.message.userId).name + ": ");
-    li.append(users.findById(e.message.userId).lat + "  " +
-        users.findById(e.message.userId).lng + " ");
+    li.append("<strong>"+users.findById(e.message.userId).name + ": </strong>");
+    /*li.append(users.findById(e.message.userId).lat + "  " +*/
+    /*users.findById(e.message.userId).lng + " ");*/
     li.append(e.message.body);
     $('#message-list').append(li);
     messageArea = $('#messages');
@@ -271,6 +270,7 @@ var Locochat = function() {
           sendChat(msg);
 
         $('#chat').val('');
+        $('#theform')[0].reset();
         return false;
       } else if (e.keyCode == 27) { // escape
         $('#chat').val('');
@@ -336,6 +336,7 @@ var Locochat = function() {
     
     now.onChatReceived = function (serverUser, message) {
       console.log("chat from "+serverUser.userId);
+      haha(message);
       messages.add(new Message(
             serverUser.userId, message.text,
             message.lat, message.lng,
@@ -344,11 +345,26 @@ var Locochat = function() {
           ));
     };
   }
+
+function haha(message) {
+  if (message.text.indexOf("pix") != -1)
+    message.text += '<img src="http://www.mediaevent.de/repos/2008/xhtml/stifte.jpg" />';
+
+message.text.replace(/(https?:\/\/)?(www\.)?(youtu\.be\/|youtube\.com(\/embed\/|\/v\/|\/watch\?v=))([\w\-]{10,12})\b/,
+'<object width="425" height="344"> <param name="movie" value="http://www.youtube.com/v/$5?fs=1"</param> <param name="allowFullScreen" value="true"></param> <param name="allowScriptAccess" value="always"></param> <embed src="http://www.youtube.com/v/$5?fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" width="425" height="344"> </embed> </object>');
+
+  /*if (message.text.indexOf("http://www.youtube.com") != -1)*/
+  /*message.text*/
+}
   
+var lastLat = 37.414346, lastLng = -122.076902, lastAcc = 16;
+var lastNameUsed;
   function initialize() {
     console.log('In Initialize');
 
-    now.initUser(5, 5, 5, "My Name "+Math.random());
+if (!lastNameUsed)
+lastNameUsed = prompt("Your name?");
+    now.initUser(lastLat, lastLng, lastAcc, lastNameUsed);
   }
 
   function watchLocation(callback) {
@@ -356,6 +372,9 @@ var Locochat = function() {
       navigator.geolocation.watchPosition(
         function(position) {
           console.log("before set coord");
+lastLat = position.coords.latitude;
+lastLng = position.coords.longitude;
+lastAcc = position.coords.accuracy;
           callback(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
         }, 
         function() { //failure
