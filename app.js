@@ -121,15 +121,17 @@ giveNearbyUsersToClient(user); // TESTING
   });
 };
 
-everyone.on('leave', function() {
-  User.findById(stateVars[this.user.clientId].id, function (err, user) {
+everyone.now.disconnect = function() {
+  var currentVars = stateVars[this.user.clientId];
+  delete stateVars[this.user.clientId];
+  User.findById(currentVars.id, function (err, user) {
     if (errorCheck(err, 'Unload User Error')) {
       user.loggedIn = false;
       user.save();
       
       User.find({
         location: {
-          $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
+          $near: [currentVars.lat, currentVars.lng],
           $maxDistance: 5
         },
         loggedIn: true
@@ -146,10 +148,10 @@ everyone.on('leave', function() {
       });
     }
   });
-});
+};
 
 everyone.now.sendMessage = function(message) {
-  console.log('message: ' + message);
+  console.log('------------------------------message: ' + message);
   
   User.findById(stateVars[this.user.clientId].id, function (err, user) {
     if (errorCheck(err, 'Send Message Error')) {
