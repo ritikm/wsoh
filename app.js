@@ -14,6 +14,7 @@ var nowjs = require("now");
 var everyone = nowjs.initialize(app);
 
 everyone.now.initUser = function() {
+  console.log('In initUser');
   this.now.userId = this.user.clientId;
   
   console.log(this.user.clientId);
@@ -44,6 +45,8 @@ everyone.now.initUser = function() {
         }
         
         this.now.nearbyUsers = result;
+        
+        console.log(result);
     });
   });
 }
