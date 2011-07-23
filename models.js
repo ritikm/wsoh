@@ -11,7 +11,8 @@ var Users = new Schema({
   userId : String,
   name : String,
   location : { type: [Number], index: { loc: '2d' } },
-  messages : [Messages]
+  messages : [Messages],
+  loggedIn : { type: Boolean, default: true }
 });
 
 User = mongoose.model('Users', Users);

@@ -4,6 +4,7 @@
  */
 
 var express = require('express');
+var util = require('util');
 
 var app = module.exports = express.createServer();
 mongoose = require('mongoose');
@@ -21,20 +22,33 @@ everyone.now.initUser = function() {
   var newUser = new User();
   newUser.location = [this.now.lat, this.now.lng];
   newUser.name = this.now.name;
-  newUser.save(function (err) {
+  newUser.save(function(err) {
     if (err) {
       console.log('Database Error:');
-      console.log(err);
+      console.log(util.inspect(err, true));
       return;
     }
-    User.find({loc: {$near: [50,50], $maxDistance: 1}},
-      function(err, docs) {
+    
+    db.executeDbCommand({
+      geoNear : 'Users',
+      near : [this.now.lat, this.now.lng], 
+      spherical : true,
+      maxDistance : 5
+    }, function(err, result) {
+        if (err) {
+          console.log('Database Error:');
+          console.log(util.inspect(err, true));
+          return;
+        }
         
-      });
+        
+    });
   });
 }
 
-everyone.now.
+everyone.now.unloadUser = function() {
+  
+};
 
 everyone.now.distribute = function(message) {
   everyone.now.receive(this.now.name, message);
