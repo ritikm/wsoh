@@ -39,7 +39,7 @@ everyone.now.initUser = function() {
       nowjs.getClient(that.now.userId, function() {
         console.log('doc=' + util.inspect(doc, true));
         console.log('this.now=' + util.inspect(this.now, true));
-        this.now.clientId = doc._id;
+        this.now.clientId = doc['_id'];
       });
       
       User.find({
