@@ -168,12 +168,12 @@ everyone.now.sendMessage = function(message) {
         lat: stateVars[user.userId].lat,
         lng: stateVars[user.userId].lng
       }
-      message.time = new Date().getTime()
+      message.time = new Date().getTime();
       message.user = user;
       message.text = message;
       message.save();
     }
-  }
+  });
 };
 
 // Configuration
