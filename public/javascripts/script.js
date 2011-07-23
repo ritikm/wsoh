@@ -1,6 +1,7 @@
 
-initialize();
+now.ready(initialize);
 var locationSet = false;
+
 function initialize() {
   console.log('In Initialize');
   if(navigator.geolocation) {
