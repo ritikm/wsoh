@@ -7,6 +7,8 @@ var express = require('express');
 
 var app = module.exports = express.createServer();
 mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/db');
+
 require('models');
 
 var nowjs = require("now");
@@ -15,7 +17,18 @@ var everyone = nowjs.initialize(app);
 everyone.now.initUser = function() {
   this.now.userId = this.user.clientId;
   console.log(this.user.clientId);
-};
+  
+  var newUser = new User();
+  newUser.location = [this.now.lat, this.now.lng];
+  newUser.name = this.now.name;
+  newUser.save(function (err) {
+    if (err) {
+      console.log('Database Error:');
+      console.log(err);
+      return;
+    } 
+  });
+}
 
 everyone.now.distribute = function(message) {
   everyone.now.receive(this.now.name, message);

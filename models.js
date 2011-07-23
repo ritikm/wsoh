@@ -14,5 +14,5 @@ var Users = new Schema({
   messages : [Messages]
 });
 
-mongoose.model('Users', Users);
-mongoose.model('Messages', Messages);
+User = mongoose.model('Users', Users);
+Message = mongoose.model('Messages', Messages);
