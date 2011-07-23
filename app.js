@@ -13,6 +13,16 @@ require('./models');
 var nowjs = require("now");
 var everyone = nowjs.initialize(app);
 
+var errorCheck = function(error, data) {
+  if (err) {
+    console.log(data + ': ');
+    console.log(util.inspect(err, true));
+    return false;
+  }
+  
+  return true;
+}
+
 everyone.now.initUser = function() {
   console.log('In initUser');
   this.now.userId = this.user.clientId;
@@ -23,36 +33,35 @@ everyone.now.initUser = function() {
   newUser.location.lat = this.now.lat;
   newUser.location.lng = this.now.lng;
   newUser.name = this.now.name;
-  newUser.save(function(err) {
-    if (err) {
-      console.log('Database Error:');
-      console.log(util.inspect(err, true));
-      return;
+  newUser.save(function(err, doc) {
+    if(errorCheck(err, 'User Save Error')) {
+      that.now.id = doc._id;
+      User.find({
+        location: {
+          $near: [that.now.lat, that.now.lng],
+          $maxDistance: 5
+        },
+        loggedIn: true
+      }, function(err, result) {
+        if (errorCheck(err, 'Database Error')) {
+            console.log('Got results');
+            console.log(util.inspect(result, true));
+            
+          }
+      });
     }
     
-    User.find({
-      location: {
-        $near : [that.now.lat, that.now.lng],
-        $maxDistance : 5
-      },
-      loggedIn: true
-    }, function(err, result) {
-        if (err) {
-          console.log('Database Error:');
-          console.log(util.inspect(err, true));
-          return;
-        }
-        console.log('Got resutls');
-        console.log(util.inspect(result, true));
-        that.now.nearbyUsers = result;
-        
-        // console.log(result);
-    });
+
   });
 }
 
 everyone.now.unloadUser = function() {
-  
+  User.findById(this.now.id, function (err, user) {
+    if (errorCheck(err, 'Unload User Error')) {
+      user.loggedIn = false;
+      user.save();
+    }
+  });
 };
 
 everyone.now.distribute = function(message) {

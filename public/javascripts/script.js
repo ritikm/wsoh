@@ -1,7 +1,9 @@
 
 now.ready(initialize);
 var locationSet = false;
-
+$(window).bind('unload.now', function() {
+  now.unloadUser();
+});
 function initialize() {
   console.log('In Initialize');
   if(navigator.geolocation) {
