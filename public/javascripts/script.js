@@ -13,7 +13,9 @@ function initialize() {
   }
   
   function handleNoGeolocation(browserSupportFlag) {
-    
+    now.noGeolocation = true;
+    now.browserSupportFlag = browserSupportFlag;
+    setCoords();
   }
 }
 
