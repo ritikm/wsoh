@@ -15,3 +15,12 @@ a {
   width: 300px;
   float: left;
 }
+
+#canvas-area {
+  position: relative;
+}
+
+.popup-message {
+  background-color: #555;
+  color: white;
+}

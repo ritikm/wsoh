@@ -2,7 +2,9 @@ h1= title
 p Welcome to #{title}
 
 .clearfix
-  canvas#radar(width=480, height=480)
+  #canvas-area
+    canvas#radar(width=480, height=480)
+    #popup-messages
   #messages
     ul#message-list
       li Hello world!

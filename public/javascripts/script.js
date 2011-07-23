@@ -128,12 +128,23 @@ var Locochat = function() {
   function init(myUserId) {
     myUser = new User(myUserId, "Me", 5, 5);
 
-    users.add(new User(6, "David", 5, 5));
-    users.add(new User(8, "Tony", 5, 5.5));
-    setInterval(updateLocation, 1000);
-    setInterval(addRandomMessage, 2000);
+    users.add(myUser);
 
     messages.onAdd(messageAdded);
+
+
+    // TESTING
+
+    var david = new User(6, "David", 5, 5);
+    users.add(david);
+    users.add(new User(8, "Tony", 5, 5.5));
+
+    setTimeout(function (){
+      messages.add(new Message(david.userId, "I'm david", david.lat, david.lng, new Date()));
+    }, 1500);
+
+    setInterval(updateLocation, 1000);
+    setInterval(addRandomMessage, 2000);
   }
 
   function updateLocation() {
@@ -144,12 +155,13 @@ var Locochat = function() {
         myUser.lng + 0.05);
 
     render();
+    popups.updatePositions();
   }
 
   function addRandomMessage() {
     console.log("Adding random message");
 
-    messages.add(new Message(myUser, "HI", myUser.lat, myUser.lng, new Date()));
+    messages.add(new Message(myUser.userId, "HI", myUser.lat, myUser.lng, new Date()));
   }
 
   function render() {
@@ -166,6 +178,8 @@ var Locochat = function() {
     allusers = users.getAll();
     for (var userid in users.getAll()) {
       var u = users.findById(userid);
+      if (u == myUser)
+        continue;
       console.log("Hi user "+userid);console.log(u);
       var pos = myUser.computeXY(u.lat, u.lng);
       ctx.fillStyle = "red";
@@ -181,6 +195,43 @@ var Locochat = function() {
     }
   }
 
+  var PopupMessagesView = Class.extend({
+    init: function() {
+      this.store = {}; // user ID => { model: Message object, el: DOM element }
+    },
+    _positionMessage: function(message, el) {
+      var u = users.findById(message.userId);
+      var pos = myUser.computeXY(u.lat, u.lng);
+      el.css({ position: 'absolute',
+        top: pos.y,
+        left: pos.x
+      });
+    },
+    showPopupMessage: function(message) {
+      if (this.store[message.userId] !== undefined)
+        this.store[message.userId].el.remove();
+
+      var div = $('<div class="popup-message" />');
+      div.append(message.body);
+
+      this._positionMessage(message, div);
+      $('#popup-messages').append(div);
+
+      this.store[message.userId] = {
+        model: message,
+        el: div
+      };
+    },
+
+    updatePositions: function() {
+      for (var userid in this.store) {
+        var lastMessage = this.store[userid];
+        this._positionMessage(lastMessage.model, lastMessage.el);
+      }
+    },
+  });
+  var popups = new PopupMessagesView();
+
   function messageAdded(e) {
     var msgId = 'message-' + Math.floor(Math.random()*2147483647);
     var li = $('<li id="'+msgId+'" />');
@@ -190,6 +241,8 @@ var Locochat = function() {
     $('#message-list').append(li);
     messageArea = $('#messages');
     messageArea.scrollTop(messageArea[0].scrollHeight);
+
+    popups.showPopupMessage(e.message);
   }
   
   return {
