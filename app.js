@@ -7,8 +7,6 @@ var express = require('express');
 var util = require('util');
 
 var app = module.exports = express.createServer();
-mongoose = require('mongoose');
-mongoose.connect('mongo://chat:anadminpassword@localhost:27017/db');
 
 require('./models');
 

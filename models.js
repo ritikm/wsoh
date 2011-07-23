@@ -1,3 +1,6 @@
+mongoose = require('mongoose');
+mongoose.connect('mongo://chat:anadminpassword@localhost:27017/db');
+
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.ObjectId;
 
