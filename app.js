@@ -57,6 +57,7 @@ everyone.now.initUser = function(lat, lng, name) {
       }
   });
 };
+
 var giveNearbyUsersToClient = function (user) {
   User.find({
       location: {
@@ -79,8 +80,6 @@ var giveNearbyUsersToClient = function (user) {
     }
   });
 };
-
-
 
 everyone.now.move = function(lat, lng) {
   User.findById(stateVars[this.user.clientId].id, function (error, user) {
@@ -131,7 +130,7 @@ everyone.now.unloadUser = function() {
           console.log(util.inspect(results, true));
           async.forEach(results, function(element, index) {
             nowjs.getClient(element.userId, function() {
-              this.now.onUserLeft(user, message);
+              this.now.onUserLeft(user);
             });
           });
         }
@@ -157,7 +156,7 @@ everyone.now.sendMessage = function(message) {
           console.log(util.inspect(results, true));
           async.forEach(results, function(element, index) {
             nowjs.getClient(element.userId, function() {
-              this.now.onChatRecieved(user, message);
+              this.now.onChatReceived(user, message);
             });
           });
         }
