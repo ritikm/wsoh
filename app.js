@@ -35,9 +35,10 @@ everyone.now.initUser = function() {
   newUser.name = this.now.name;
   newUser.save(function(err, doc) {
     if(errorCheck(err, 'User Save Error')) {
-      console.log("printing now..");
-       console.log(util.inspect(that.now, true));
-      that.now.stid = doc._id;
+      nowjs.getClient(that.now.userId, function() {
+        this.now.clientId = doc._id;
+      });
+      
       User.find({
         location: {
           $near: [that.now.lat, that.now.lng],
@@ -48,7 +49,9 @@ everyone.now.initUser = function() {
         if (errorCheck(err, 'Database Error')) {
             console.log('Got results');
             console.log(util.inspect(result, true));
-            
+            nowjs.getClient(that.now.userId, function() {
+              this.now.nearbyUsers(results)
+            });
           }
       });
     }
