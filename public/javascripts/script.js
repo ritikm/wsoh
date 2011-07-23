@@ -25,9 +25,15 @@ function initialize() {
     setCoords(37.414346, -122.076902, 16);
   }
 }
-now.nearbyUsers = function (results) {
+
+now.getNearbyUsers = function (results) {
   
 };
+
+now.broadcast = function (message) {
+  
+};
+
 function setCoords(lat, lng, accuracy) {
   console.log("in setCoords");
   now.lat = lat;
@@ -256,6 +262,7 @@ var Locochat = function() {
           console.log("SEND: "+msg);
           // TODO send to server
           messages.add(new Message(myUser.userId, msg, myUser.lat, myUser.lng, new Date()));
+          now.distribute(msg);
         }
 
         $('#chat').val('');

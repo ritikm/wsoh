@@ -6,6 +6,8 @@
 var express = require('express');
 var util = require('util');
 
+var async = require('async');
+
 var app = module.exports = express.createServer();
 
 require('./models');
@@ -25,13 +27,14 @@ var errorCheck = function(err, data) {
 
 everyone.now.initUser = function() {
   console.log('In initUser');
-  this.now.userId = this.user.clientId;
   var that = this;
   console.log(this.user.clientId);
   
   var newUser = new User();
   newUser.location.lat = this.now.lat;
   newUser.location.lng = this.now.lng;
+  newUser.userId = this.now.userId = this.user.clientId;
+  // newUser._id = this.user.clientId;
   newUser.name = this.now.name;
   newUser.save(function(err, doc) {
     if(errorCheck(err, 'User Save Error')) {
@@ -40,7 +43,8 @@ everyone.now.initUser = function() {
         console.log('doc=' + util.inspect(doc, true));
         console.log('this.now=' + util.inspect(this.now, true));
         console.log('doc._id=' + doc['_id']);
-        this.now.clientId = doc['_id'].toString();
+        this.user
+        // this.now.clientId = doc['_id'].toString();
       });
       
       User.find({
@@ -49,12 +53,12 @@ everyone.now.initUser = function() {
           $maxDistance: 5
         },
         loggedIn: true
-      }, function(err, result) {
+      }, function(err, results) {
         if (errorCheck(err, 'Database Error')) {
             console.log('Got results');
-            console.log(util.inspect(result, true));
+            console.log(util.inspect(results, true));
             nowjs.getClient(that.now.userId, function() {
-              this.now.nearbyUsers(results)
+              this.now.getNearbyUsers(results)
             });
           }
       });
@@ -74,7 +78,24 @@ everyone.now.unloadUser = function() {
 };
 
 everyone.now.distribute = function(message) {
-  everyone.now.receive(this.now.name, message);
+  console.log('message: ' + message);
+  User.find({
+        location: {
+          $near: [this.now.lat, this.now.lng],
+          $maxDistance: 5
+        },
+        loggedIn: true
+      }, function(err, results) {
+        if (errorCheck(err, 'Database Error')) {
+            console.log('Got results');
+            console.log(util.inspect(results, true));
+            async.forEach(results, function(element, index) {
+              nowjs.getClient(element.userId, function() {
+                this.now.broadcast(message);
+              });
+            });
+          }
+      });
   
 };
 
