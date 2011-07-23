@@ -33,7 +33,6 @@ everyone.now.initUser = function() {
     User.find({
       location: {
         $near : [newUser.location.lat, newUser.location.lng],
-        $spherical : true,
         $maxDistance : 5
       },
       loggedIn: true
