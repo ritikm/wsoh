@@ -2,7 +2,7 @@ var Schema = mongoose.Schema;
 var ObjectId = mongoose.ObjectId;
 
 var Messages = new mongoose.Schema({
-  location : Array,
+  //location : Array,
   user : mongoose.ObjectId,
   time : Number
 });
@@ -10,18 +10,18 @@ var Messages = new mongoose.Schema({
 var Users = new mongoose.Schema({
   userId : String,
   name : String,
-  location : Array,
+  //location : Array,
   messages : [Messages],
   loggedIn : { type: Boolean, default: true, index: true }
 });
 
-Messages.index({
+/*Messages.index({
   location: '2d'
 });
 
 Users.index({
   location: '2d'
 });
-
+*/
 User = mongoose.model('Users', Users);
 Message = mongoose.model('Messages', Messages);
