@@ -13,9 +13,26 @@
 <script type="text/javascript" src="scripts/jquery/jquery.simplemodal.min.js"></script>
 <script type="text/javascript" src="scripts/models/forms-model.js"></script>
 
-<script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+<script type="text/javascript">
+  
+  $(function() {
+    $('.punch').click(function() {
+      $('.l-wrapper').fadeOut(1500, function() {
+        $('.iframe').show();
+        $('.iframe').width('20px').height('20px');
+        $('.iframe').animate({ width :'1000px' }, 1200).animate({ height :'1200px' }, 1200);
+      })
+    })
+  });
 
-<script src="https://cdn.optimizely.com/js/1891008.js"></script>
+</script>
+
+<div class="iframe" style="display: none;">
+  
+  <iframe src="/jade" width='1000px' height='1200px'></iframe>
+  
+</div>
+
 <div class="l-main-container">
     <div class="l-wrapper">
         <section class="l-home-intro">

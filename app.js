@@ -181,6 +181,12 @@ app.get('/', function(req, res){
   res.end(html);
 });
 
+app.get('/jade', function(req, res) {
+  res.render('index', {
+    title: 'LocoChat'
+  });
+});
+
 app.dynamicHelpers({
   params: function(req, res) {
     return req.params;
