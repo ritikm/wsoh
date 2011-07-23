@@ -252,25 +252,35 @@ var Locochat = function() {
       now.unloadUser();
     });
 
-    now.onUserJoined = function (user) {
-      users.add(new User(user.userId, user.name, user.lat, user.lng));
+    now.onUserJoined = function (dbUser) {
+      users.add(new User(dbUser.userId, dbUser.name,
+            dbUser.location.lat, dbUser.location.lng));
     };
     now.onUserLeft = function () {
-      users.remove(user.userId);
+      users.remove(dbUser.userId);
+    };
+    now.onUserMoved = function (dbUser) {
+      var u = users.findById(dbUser.userId);
+      if (u) {
+        u.lat = dbUser.location.lat;
+        u.lng = dbUser.location.lng;
+      } else {
+        console.log("Unknown user moved: "+dbUser.userId);
+      }
     };
     
-    now.onNearbyUsersUpdated = function (users) {
+    now.onNearbyUsersUpdated = function (dbUsers) {
       users.clear();
-      _.each(users, function(dbUser) {
+      _.each(dbUsers, function(dbUser) {
           users.add(new User(dbUser.userId, dbUser.name,
               dbUser.location.lat, dbUser.location.lng));
       });
       render();
     };
     
-    now.onChatReceived = function (user, message) {
+    now.onChatReceived = function (dbUser, message) {
       messages.add(new Message(
-            user, message.text,
+            dbUser, message.text,
             message.location.lat, message.location.lng,
             time
           ));
