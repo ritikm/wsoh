@@ -26,9 +26,15 @@ everyone.now.initUser = function() {
       console.log('Database Error:');
       console.log(err);
       return;
-    } 
+    }
+    User.find({loc: {$near: [50,50], $maxDistance: 1}},
+      function(err, docs) {
+        
+      });
   });
 }
+
+everyone.now.
 
 everyone.now.distribute = function(message) {
   everyone.now.receive(this.now.name, message);
@@ -55,6 +61,15 @@ app.get('/', function(req, res){
   res.render('index', {
     title: 'Express'
   });
+});
+
+app.dynamicHelpers({
+    params: function(req, res) {
+      return req.params;
+    },
+    session: function(req, res) {
+      return req.session;
+    }
 });
 
 app.listen(3000);
