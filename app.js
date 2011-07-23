@@ -20,7 +20,8 @@ everyone.now.initUser = function() {
   console.log(this.user.clientId);
   
   var newUser = new User();
-  newUser.location = [this.now.lat, this.now.lng];
+  newUser.location.lat = this.now.lat;
+  newUser.location.lng = this.now.lng;
   newUser.name = this.now.name;
   newUser.save(function(err) {
     if (err) {
@@ -40,8 +41,6 @@ everyone.now.initUser = function() {
           console.log(util.inspect(err, true));
           return;
         }
-        
-        
     });
   });
 }
