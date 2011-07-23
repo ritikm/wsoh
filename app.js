@@ -27,7 +27,7 @@ var errorCheck = function(err, data) {
   return true;
 };
 
-everyone.now.initUser = function(lat, lng) {
+everyone.now.initUser = function(lat, lng, name) {
   console.log('In initUser');
   var that = this;
   console.log(this.user.clientId);
@@ -37,16 +37,18 @@ everyone.now.initUser = function(lat, lng) {
   stateVars[this.user.clientId] = {
     userId: this.user.clientId,
     lat: lat,
-    lng: lng
+    lng: lng,
+    name: name
   };
   newUser.location.lat = lat;
   newUser.location.lng = lng;
   newUser.userId = this.user.clientId;
-  newUser.name = this.now.name;
+  newUser.name = name;
   newUser.save(function(err, user) {
     if(errorCheck(err, 'User Save Error')) {
       
       nowjs.getClient(user.userId, function() {
+          stateVars[this.user.clientId] = doc['_id'];
         // console.log('doc=' + util.inspect(doc, true));
         // console.log('this.now=' + util.inspect(this.now, true));
         // console.log('doc._id=' + doc['_id']);
@@ -54,12 +56,14 @@ everyone.now.initUser = function(lat, lng) {
         // this.now.clientId = doc['_id'].toString();
       });
       
+      
       giveNearbyUsersToClient(user);
       
     
 
-  });
-}
+  }
+});
+};
 var giveNearbyUsersToClient = function (user) {
   User.find({
         location: {
@@ -74,17 +78,26 @@ var giveNearbyUsersToClient = function (user) {
             nowjs.getClient(user.userId, function() {
               this.now.onNearbyUsersUpdated(results)
             });
+            
+            async.forEach(results, function(element, index) {
+                
+              nowjs.getClient(element.userId, function() {
+                this.now.onUserJoined(user);
+              });
+            });
+            
           }
       });
-    }
-};
+    };
 
+    
+    
 everyone.now.move = function(lat, lng) {
   
 };
 
 everyone.now.unloadUser = function() {
-  User.findById(this.now.id, function (err, user) {
+  User.findById(stateVars[this.user.clientId].id, function (err, user) {
     if (errorCheck(err, 'Unload User Error')) {
       user.loggedIn = false;
       user.save();
@@ -94,9 +107,13 @@ everyone.now.unloadUser = function() {
 
 everyone.now.distribute = function(message) {
   console.log('message: ' + message);
+  
   User.find({
+      userId: this.user.clientId
+  }, function (error, user) {
+    User.find({
         location: {
-          $near: [this.now.lat, this.now.lng],
+          $near: [stateVars[this.user.clientId].lat, stateVars[this.user.clientId].lng],
           $maxDistance: 5
         },
         loggedIn: true
@@ -106,23 +123,21 @@ everyone.now.distribute = function(message) {
             console.log(util.inspect(results, true));
             async.forEach(results, function(element, index) {
               nowjs.getClient(element.userId, function() {
-                this.now.broadcast(message);
+                this.now.broadcast(user, message);
               });
             });
           }
       });
-  User.find({
-      userId: this.user.clientId
-  }, function (error, user) {
-  var message = new Message();
-  message.location = {
-    lat: stateVars[user.userId].lat,
-    lng: stateVars[user.userId].lng
-  }
-  message.time = new Date().getTime()
-  message.user = user;
-  message.text = message;
-  message.save();
+    
+    var message = new Message();
+    message.location = {
+      lat: stateVars[user.userId].lat,
+      lng: stateVars[user.userId].lng
+    }
+    message.time = new Date().getTime()
+    message.user = user;
+    message.text = message;
+    message.save();
   }
 };
 
