@@ -10,7 +10,7 @@ var app = module.exports = express.createServer();
 mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/db');
 
-require('models');
+require('./models');
 
 var nowjs = require("now");
 var everyone = nowjs.initialize(app);
