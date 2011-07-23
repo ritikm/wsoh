@@ -2,9 +2,11 @@
 initialize();
 var locationSet = false;
 function initialize() {
+  console.log('In Initialize');
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(position) {
+        console.log("before set coord");
         setCoords(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
       }, 
       function() {
@@ -22,11 +24,14 @@ function initialize() {
 }
 
 function setCoords(lat, lng, accuracy) {
+  console.log("in setCoords");
   now.lat = lat;
   now.lng = lng;
   now.accuracy = accuracy;
   locationSet = true;
   now.initUser();
+  console.log("init user");
+  console.log(now);
 }
 
 var messages = [];
