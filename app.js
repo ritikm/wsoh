@@ -8,6 +8,9 @@ var util = require('util');
 var async = require('async');
 var _ = require('underscore');
 
+var fs = require('fs');
+var html = fs.readFileSync('index.html');
+
 var connectedUsers = {}; // { clientId => { userId, lat, lng, name } }
 
 var MAX_DISTANCE = 5;
@@ -175,9 +178,7 @@ app.configure(function(){
 // Routes
 
 app.get('/', function(req, res){
-    res.render('index', {
-        title: 'Express'
-    });
+  res.end(html);
 });
 
 app.dynamicHelpers({
