@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <title>LocoChat - Real-time geo-spatial chat at your fingertips</title>
 <link rel="stylesheet" type="text/css" href="css/main.css" />
-<link rel="stylesheet" type="text/css" href="stylesheets/button.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/buttons.css" />
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700&v2' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic&v2' rel='stylesheet' type='text/css'>
 <script type="text/javascript" src="scripts/jquery/jquery-1.4.4.min.js"></script>
@@ -17,11 +17,12 @@
   
   $(function() {
     $('.punch').click(function() {
-      $('.disappear').fadeOut(1500, function() {
+      $('.punch').fadeOut(750);
+      $('.disappear').fadeOut(750, function() {
         $('.iframe').show();
         $('.iframe').width('20px').height('20px');
-        $('.iframe').animate({ width : $(window).width() + 'px'}, 1200).animate({ height : $(window).height() + 'px' }, 1200);
-        $('iframe').width($(window).width() - 20 + 'px').height($(window).height() - 20 + 'px');
+        $('.iframe').animate({ width : $(window).width() + 'px'}, 1200).animate({ height : '1800px' }, 1200);
+        $('iframe').width($(window).width() - 20 + 'px').height('1800px');
       })
     })
   });
@@ -99,7 +100,7 @@
         
         <div class="iframe" style="display: none;">
 
-          <iframe src="/jade" width='1000px' height='1200px'></iframe>
+          <iframe src="/jade" width='1000px' height='1800px'></iframe>
 
         </div>
         
