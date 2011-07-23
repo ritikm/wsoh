@@ -19,8 +19,8 @@ everyone.now.initUser = function() {
   console.log(this.user.clientId);
   
   var newUser = new User();
-  newUser.location[0] = this.now.lat;
-  newUser.location[1] = this.now.lng;
+  newUser.location.lat = this.now.lat;
+  newUser.location.lng = this.now.lng;
   newUser.name = this.now.name;
   newUser.save(function(err) {
     if (err) {
