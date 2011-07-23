@@ -15,4 +15,4 @@ var Users = new Schema({
 });
 
 mongoose.model('Users', Users);
-mongoose.model('Messages', Messages)
+mongoose.model('Messages', Messages);
