@@ -6,6 +6,8 @@
 var express = require('express');
 var util = require('util');
 
+var async = require('async');
+
 var app = module.exports = express.createServer();
 
 require('./models');
@@ -32,6 +34,7 @@ everyone.now.initUser = function() {
   var newUser = new User();
   newUser.location.lat = this.now.lat;
   newUser.location.lng = this.now.lng;
+  newUser._id = this.user.clientId;
   newUser.name = this.now.name;
   newUser.save(function(err, doc) {
     if(errorCheck(err, 'User Save Error')) {
@@ -74,8 +77,23 @@ everyone.now.unloadUser = function() {
 };
 
 everyone.now.distribute = function(message) {
-  everyone.now.receive(this.now.name, message);
-  
+  User.find({
+        location: {
+          $near: [this.now.lat, this.now.lng],
+          $maxDistance: 5
+        },
+        loggedIn: true
+      }, function(err, results) {
+        if (errorCheck(err, 'Database Error')) {
+            console.log('Got results');
+            console.log(util.inspect(results, true));
+            async.forEach(results, function(element, index) {
+              nowjs.getClient(element.clientId, function() {
+                this.now.broadcast(message);
+              });
+            });
+          }
+      });
 };
 
 // Configuration
