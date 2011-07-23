@@ -1,0 +1,140 @@
+/**
+* @package GeckoBoard 
+* @subpackage Buttons Stylesheet
+* @version 0.1
+* @lastmodified September 24, 2010
+* @author Kuzzy <kuzzzy@gmail.com>
+*/
+
+/**
+* Custom Buttons
+*
+* @section buttons
+*/
+.button {background-color:transparent; background-repeat:no-repeat; background-position:0 0; cursor:pointer; margin:0; padding:0; border:0;}
+.btn-login {background-image:url(../images/buttons/btn_log_in.png); width:89px;}
+.btn-newpass {background-image:url(../images/buttons/btn_new_pass.png); width:201px;}
+    input[class~="btn-big"] {height:40px;}
+    input[class~="btn-big"]:hover {background-position:0 -40px;}
+
+/**
+ * Button switcher
+ */
+input[class~="btn-st"] {height:30px;}
+    input[class~="btn-st"]:hover {background-position:0 -30px; color: #FFFFFF}
+    input[class~="btn-st"]:active, input[class~="btn-st"].btn-active { background-position:0 -60px;}
+    input[class~="btn-st"].btn-disable { background-position:0 -90px;}
+.btn-switch-dashboard {background-image:url(../images/buttons/btn-switch.png); width:30px; height:30px;}
+
+/**
+ * @subsection Header Buttons
+ */
+input[class~="btn-head"] {height:23px; color:#9e9fa0; font:11px Arial; text-transform:uppercase; padding:0 4px 0 25px; border-right:1px solid #000;}
+    input[class~="btn-head"]:hover {background-position:0 -23px; color: #FFFFFF}
+    input[class~="btn-head"]:active {background-position:0 -46px; border-right:1px solid #77AB13}
+
+/**
+ * @subsection Control button (ok, add, next, remove)
+ */
+input[class~="btn-control"] {padding:0 9px 0 40px; height: 30px; border-right:1px solid #000; font:12px Arial, Helvetica, sans-serif; color: #9E9FA0; text-transform: uppercase}
+    input[class~="btn-control"]:hover {background-position:0 -30px; color: #FFFFFF}
+    input[class~="btn-control"]:active {background-position:0 -60px; border-right:1px solid #77AB13}
+    input[class~="btn-control"].btn-disable {background-position:0 -90px; border-right:1px solid #262626}
+    
+.btn-ok {background-image:url(../images/buttons/btn-ok.png);}
+.btn-add {padding:0 4px 0 34px; background-image:url(../images/buttons/btn-add.png);}
+.btn-next {padding:0 4px 0 34px; background-image:url(../images/buttons/btn-next.png);}
+.btn-remove {padding:0 4px 0 34px; background-image:url(../images/buttons/btn-remove.png);}
+/**
+ * Control button plain
+ */
+input[class~="btn-control-plain"] {padding:0 9px 0 10px; height: 30px; background-image:url(../images/buttons/btn-blank.png); border-right:1px solid #000; font:12px Arial, Helvetica, sans-serif; color: #9E9FA0; text-transform: uppercase}
+    input[class~="btn-control-plain"]:hover {background-position:0 -30px; color: #FFFFFF}
+    input[class~="btn-control-plain"]:active {background-position:0 -60px; border-right:1px solid #77AB13}
+    input[class~="btn-control-plain"].btn-disable {background-position:0 -90px; border-right:1px solid #262626}
+
+/**
+* @subsection Select view buttons
+*/
+.btn-grid-3 {background-image:url(../images/buttons/btn-grid-3.png); width:33px;}
+.btn-grid-4 {background-image:url(../images/buttons/btn-grid-4.png); width:38px;}
+.btn-grid-5 {background-image:url(../images/buttons/btn-grid-5.png); width:43px;}
+.btn-grid-6 {background-image:url(../images/buttons/btn-grid-6.png); width:48px;}
+.btn-grid-7 {background-image:url(../images/buttons/btn-grid-7.png); width:53px;}
+.btn-grid-8 {background-image:url(../images/buttons/btn-grid-8.png); width:58px;}
+
+/**
+* @subsection Collapse/Expand buttons
+*/
+.btn-collapse {background-image:url(../images/buttons/btn-expand.png); width:90px; height:14px;} /*Edit*/
+	.btn-collapse:hover {background-position:0 -14px;}
+.btn-expand {background-image:url(../images/buttons/btn-expand.png); width:90px; height:14px; background-position:0 -28px;} /*Edit*/
+	.btn-expand:hover {background-position:0 -42px;} 
+	
+/**
+* @subsection Plain buttons
+*/	
+.btn-plain {background:url(../images/buttons/btn-plain.png) repeat-x 0 -1px; font:normal 11px Tahoma, Geneva, sans-serif; height:24px; color:#9e9fa0; padding:0 15px 4px; border:1px solid #0f1011; text-align:center; vertical-align:middle;}
+    .btn-plain:hover {background-position:0 -31px; border-color:#1a1b1c; color:#ffffff}
+    .btn-plain:active, .btn-plain.active {background-position:0 -61px; border-color:#77ab13; }
+	
+/**
+* @subsection Widgets size buttons
+*/	
+.btn-size-x {background-image:url(../images/buttons/btn-size-x.png); width:41px; height:41px;}
+.btn-size-xx {background-image:url(../images/buttons/btn-size-xx.png); width:41px; height:41px;}
+.btn-size-xxx {background-image:url(../images/buttons/btn-size-xxx.png); width:41px; height:41px;}
+.btn-size-xxxx {background-image:url(../images/buttons/btn-size-xxxx.png); width:41px; height:41px;}
+.btn-size-xxxxxx {background-image:url(../images/buttons/btn-size-xxxxxx.png); width:41px; height:41px;}
+.btn-size-xxxxxxx {background-image:url(../images/buttons/btn-size-xxxxxxx.png); width:41px; height:41px;}
+.btn-size-xxxxxxxx {background-image:url(../images/buttons/btn-size-xxxxxxxx.png); width:41px; height:41px;}
+.btn-size-xxxxxxxxx {background-image:url(../images/buttons/btn-size-xxxxxxxxx.png); width:41px; height:41px;}
+.btn-size-xxxxxxxxxx {background-image:url(../images/buttons/btn-size-xxxxxxxxxx.png); width:41px; height:41px;}
+.btn-size-xxxxxxxxxxx {background-image:url(../images/buttons/btn-size-xxxxxxxxxxx.png); width:41px; height:41px;}
+
+.btn-size-x:hover, .btn-size-xx:hover, .btn-size-xxx:hover, .btn-size-xxxx:hover, .btn-size-xxxxxx:bover,.btn-size-xxxxxxx:bover,.btn-size-xxxxxxxx:bover,.btn-size-xxxxxxxxx:bover,.btn-size-xxxxxxxxxx:bover,.btn-size-xxxxxxxxxxx:bover {background-position:0 -41px;}
+.btn-size-x.active, .btn-size-xx.active, .btn-size-xxx.active, .btn-size-xxxx.active, .btn-size-xxxxxx.active,.btn-size-xxxxxxx.active,.btn-size-xxxxxxxx.active,.btn-size-xxxxxxxxx.active,.btn-size-xxxxxxxxxx.active,.btn-size-xxxxxxxxxxx.active{background-position:0 -82px;}
+
+/**
+ * @subsection Plans
+ */
+.btn-plans {background-image:url(../images/buttons/btn-pricing.png); width:297px; height:70px;}
+.b-s .btn-sign-in {background-image:url(../images/buttons/btn-signup-s.png);}
+.b-m .btn-sign-in {background-image:url(../images/buttons/btn-signup-m.png);}
+.b-l .btn-sign-in {background-image:url(../images/buttons/btn-signup-l.png);}
+.b-xl .btn-sign-in {background-image:url(../images/buttons/btn-signup-xl.png);}
+
+.btn-create  {background-image:url(../images/btn-create.png); width:283px; height:50px;}
+.btn-create-dis {background-image:url(../images/btn-create-dis.png); width:283px; height:50px;}
+.btn-create-dis-cc {background-image:url(../images/btn-signup-cc.png); width:498px; height:50px;}
+.btn-purchase{background: url(../images/btn-purchase.png); width:157px; height:50px; border:none; cursor: pointer;}
+
+/**
+ * Account's buttons
+ */
+.btn-negative {background-image:url(../images/buttons/btn-negative.png); width:120px; height:25px; border-right: 1px solid #D6D6D6; font: 11px Arial; color: #484848; text-transform: uppercase; text-align: left; padding-left: 30px}
+.btn-negative:hover {background-position:0 -25px; border-right: 1px solid #DEDEDE; color: #6D6D6D;}
+.btn-negative.btn-disable, .btn-negative.btn-disable:hover {background-position:0 -50px; color: #B6B6B6; border-right: 1px solid #EFEFEF}
+
+.btn-change {background-image:url(../images/buttons/btn-change.png); width:91px; height:25px; border-right: 1px solid #D6D6D6; font: 11px Arial; color: #484848; text-transform: uppercase; text-align: left; padding-left: 30px}
+.btn-change:hover {background-position:0 -25px; border-right: 1px solid #DEDEDE; color: #6D6D6D;}
+.btn-change.btn-disable, .btn-change.btn-disable:hover {background-position:0 -50px; color: #B6B6B6; border-right: 1px solid #EFEFEF}
+
+.btn-change-green {background-image:url(../images/buttons/btn-change-green.png); width: 120px; height:25px; border-right: 1px solid #D6D6D6; font: 11px Arial; color: #484848; text-transform: uppercase; text-align: left; padding-left: 35px}
+.btn-change-green:hover {background-position:0 -25px; border-right: 1px solid #DEDEDE; color: #6D6D6D;}
+.btn-change-green.btn-disable, .btn-change-green.btn-disable:hover {background-position:0 -50px; color: #B6B6B6; border-right: 1px solid #EFEFEF}
+
+.btn-regenerate {background-image:url(../images/buttons/btn-regenerate.png); width:120px; height:25px; border-right: 1px solid #D6D6D6; font: 11px Arial; color: #484848; text-transform: uppercase; text-align: left; padding-left: 30px}
+.btn-regenerate:hover {background-position:0 -25px; border-right: 1px solid #DEDEDE; color: #6D6D6D;}
+.btn-regenerate.btn-disable, .btn-regenerate.btn-disable:hover {background-position:0 -50px; color: #B6B6B6; border-right: 1px solid #EFEFEF}
+
+.btn-change-big {background-image:url(../images/buttons/btn-change-big.png); height:35px; padding: 0 15px 0 50px; border-right: 1px solid #D6D6D6; color: #484848; font: 14px Arial; text-transform: uppercase}
+.btn-change-big:hover {background-position:0 -35px; color: #6D6D6D; border-right: 1px solid #DEDEDE}
+.btn-change-big.btn-disable, .btn-change-big.btn-disable:hover {background-position:0 -70px; color: #B6B6B6; border-right: 1px solid #EFEFEF}
+
+.btn-sign-in {width:130px; height:50px;}
+
+a.btn-link {display: block;height: 25px; color: #484848 !important; line-height: 25px; text-transform: uppercase;}
+a:hover.btn-link {text-decoration: none;}
+a:a:visite.btn-link{color: #484848;}
+/* Localized */
