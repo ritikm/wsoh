@@ -16,7 +16,7 @@ var everyone = nowjs.initialize(app);
 everyone.now.initUser = function() {
   console.log('In initUser');
   this.now.userId = this.user.clientId;
-  
+  var that = this;
   console.log(this.user.clientId);
   
   var newUser = new User();
@@ -32,7 +32,7 @@ everyone.now.initUser = function() {
     
     User.find({
       location: {
-        $near : [newUser.location.lat, newUser.location.lng],
+        $near : [that.now.lat, that.now.lng],
         $maxDistance : 5
       },
       loggedIn: true
@@ -43,7 +43,7 @@ everyone.now.initUser = function() {
           return;
         }
         
-        this.now.nearbyUsers = result;
+        that.now.nearbyUsers = result;
         
         console.log(result);
     });
