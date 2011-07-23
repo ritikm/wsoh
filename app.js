@@ -13,7 +13,7 @@ require('./models');
 var nowjs = require("now");
 var everyone = nowjs.initialize(app);
 
-var errorCheck = function(error, data) {
+var errorCheck = function(err, data) {
   if (err) {
     console.log(data + ': ');
     console.log(util.inspect(err, true));
