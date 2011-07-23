@@ -49,12 +49,12 @@ everyone.now.initUser = function() {
           $maxDistance: 5
         },
         loggedIn: true
-      }, function(err, result) {
+      }, function(err, results) {
         if (errorCheck(err, 'Database Error')) {
             console.log('Got results');
-            console.log(util.inspect(result, true));
+            console.log(util.inspect(results, true));
             nowjs.getClient(that.now.userId, function() {
-              this.now.nearbyUsers(results)
+              this.now.getNearbyUsers(results)
             });
           }
       });
