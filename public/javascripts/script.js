@@ -1,5 +1,5 @@
 
-
+initialize();
 var locationSet = false;
 function initialize() {
   if(navigator.geolocation) {
