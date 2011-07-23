@@ -17,21 +17,16 @@
   
   $(function() {
     $('.punch').click(function() {
-      $('.l-wrapper').fadeOut(1500, function() {
+      $('.disappear').fadeOut(1500, function() {
         $('.iframe').show();
         $('.iframe').width('20px').height('20px');
-        $('.iframe').animate({ width :'1000px' }, 1200).animate({ height :'1200px' }, 1200);
+        $('.iframe').animate({ width : $(window).width() + 'px'}, 1200).animate({ height : $(window).height() + 'px' }, 1200);
+        $('iframe').width($(window).width() - 20 + 'px').height($(window).height() - 20 + 'px');
       })
     })
   });
 
 </script>
-
-<div class="iframe" style="display: none;">
-  
-  <iframe src="/jade" width='1000px' height='1200px'></iframe>
-  
-</div>
 
 <div class="l-main-container">
     <div class="l-wrapper">
@@ -57,83 +52,60 @@
          <canvas id="radar" width=0 height=0>
         </div>
 
-        <section class="l-home b-about clrfix">
-            <div class="l-col l-devide">
-                <h2>What is LocoChat?</h2>
-                <p class="left">LocoChat is a dynamic chat room generator, connecting you to other people near your location.</p>
-                <p class="left">Because it's a web service LocoChat is available anywhere there's internet, whether it's a 60" monitor in your office or on your smart phone. That's what makes it so magical.</p>
-            </div>
-            <div class="l-col l-devide">
-                <h2>Why LocoChat?</h2>
-                <p class="e-list"><span>Zero downloads.  Zero installs.  Available anywhere.</span><br />
-                    <span>Easy setup and configuration.  Get started in 5 seconds.</span><br />
-                    <span>Instant notification of messages -- it really is real-time!.</span><br />
-                    <span>Supreme gratification communicating with those nearby.</span><br />
-                    <span>Too shy to say hi? Use LocoChat; you'll easily get by!</span>
-                </p>
-            </div>
+        <section class="disappear">
+          
+          <section class="l-home b-about clrfix">
+              <div class="l-col l-devide">
+                  <h2>What is LocoChat?</h2>
+                  <p class="left">LocoChat is a dynamic chat room generator, connecting you to other people near your location.</p>
+                  <p class="left">Because it's a web service LocoChat is available anywhere there's internet, whether it's a 60" monitor in your office or on your smart phone. That's what makes it so magical.</p>
+              </div>
+              <div class="l-col l-devide">
+                  <h2>Why LocoChat?</h2>
+                  <p class="e-list"><span>Zero downloads.  Zero installs.  Available anywhere.</span><br />
+                      <span>Easy setup and configuration.  Get started in 5 seconds.</span><br />
+                      <span>Instant notification of messages -- it really is real-time!.</span><br />
+                      <span>Supreme gratification communicating with those nearby.</span><br />
+                      <span>Too shy to say hi? Use LocoChat; you'll easily get by!</span>
+                  </p>
+              </div>
+          </section>
+          <section class="l-home l-devide b-customers clrfix">
+              <h2>LocoChat Buzz</h2>
+              <div class="l-col">
+                  <header>
+                          <img src="images/logos/main-trapper-markelz.jpg" width="82" height="60" alt="" />
+                  </header>
+                  <article><p>“I've encountered so many situations in which built a lot of KPI dashboards over the years for various companies. No one has made it easier than LocoChat to bring all of the metrics that matter most to chat rooms into one place and present them in a visually compelling way. Love it!”</p></article>
+                  <footer>Tony Back Ho<br /></footer>
+              </div>
+              <div class="l-col">
+                  <header>
+                      <img src="images/logos/main-jasper.jpg" width="82" height="60" alt="" />
+                  </header>
+                  <article><p>“The signup process on LocoChat was seamless. It literally took me a couple seconds to get on board, and then it was simply magic that led me through its extravagant experience. The seamless integration with Now.JS makes the application blazing fast, providing real-time response, even during heavy loads. Its file upload, photo upload, and video upload system allow me to share my content with ease, and send it to people in the near vicinity. Completely takes out the boredom of sitting in a class or looking for some quick entertainment. Absolutely love it and will definitely use it for other projects without a doubt!”</p></article>
+                  <footer>Ritik van der Malhotra<br /></footer>
+              </div>
+          </section>
+
+          <section class="l-home l-devide clrfix">
+              <div class="b-intro-trial">
+                  <h3>Start using LocoChat within seconds!</h3>
+                  <input type="submit" class="button btn-plans plans-and-pricing" value="" />
+              </div>
+          </section>
+          
         </section>
-        <section class="l-home l-devide b-customers clrfix">
-            <h2>LocoChat Buzz</h2>
-            <div class="l-col">
-                <header>
-                        <img src="images/logos/main-trapper-markelz.jpg" width="82" height="60" alt="" />
-                </header>
-                <article><p>“I've encountered so many situations in which built a lot of KPI dashboards over the years for various companies. No one has made it easier than LocoChat to bring all of the metrics that matter most to chat rooms into one place and present them in a visually compelling way. Love it!”</p></article>
-                <footer>Tony Back Ho<br /></footer>
-            </div>
-            <div class="l-col">
-                <header>
-                    <img src="images/logos/main-jasper.jpg" width="82" height="60" alt="" />
-                </header>
-                <article><p>“The signup process on LocoChat was seamless. It literally took me a couple seconds to get on board, and then it was simply magic that led me through its extravagant experience. The seamless integration with Now.JS makes the application blazing fast, providing real-time response, even during heavy loads. Its file upload, photo upload, and video upload system allow me to share my content with ease, and send it to people in the near vicinity. Completely takes out the boredom of sitting in a class or looking for some quick entertainment. Absolutely love it and will definitely use it for other projects without a doubt!”</p></article>
-                <footer>Ritik van der Malhotra<br /></footer>
-            </div>
-        </section>
-        <section class="l-home l-devide b-gallery clrfix">
-            <h2>Live Screenshots!</h2>
-            <div class="l-col">
-                <a href="null" target="_blank"><img src="images/popups/live-dashboard.png" width="226" height="226" alt="" /></a>
-            </div>
-            <div class="l-col">
-                <img src="images/popups/preview-1.png" width="226" height="226" alt="" />
-                <a class="btn-plus" href="#"><img src="images/btn-gallery.png" width="40" height="40" alt=""></a>
-            </div>
-            <div class="l-col">
-                <img src="images/popups/preview-2.png" width="226" height="226" alt="" />
-                <a class="btn-plus" href="#"><img src="images/btn-gallery.png" width="40" height="40" alt=""></a>
-            </div>
-            <div class="l-col">
-                <img src="images/popups/preview-3.png" width="226" height="226" alt="" />
-                <a class="btn-plus" href="#"><img src="images/btn-gallery.png" width="40" height="40" alt=""></a>
-            </div>
-        </section>
-        <section class="l-home l-devide clrfix">
-            <div class="b-intro-trial">
-                <h3>Start using LocoChat within seconds!</h3>
-                <input type="submit" class="button btn-plans plans-and-pricing" value="" />
-            </div>
-        </section>
+        
+        <div class="iframe" style="display: none;">
+
+          <iframe src="/jade" width='1000px' height='1200px'></iframe>
+
+        </div>
+        
     </div>
 </div>
-<div id="popup-video-1" style="display:none;">
-    <iframe src="http://player.vimeo.com/video/18996339?title=0&byline=0&portrait=0" width="600" height="338" frameborder="0"></iframe></iframe>
-</div>
-<div id="popup-video-2" style="display:none;">
-    <iframe src="http://player.vimeo.com/video/19006092?title=0&byline=0&portrait=0" width="600" height="338" frameborder="0"></iframe>
-</div>
-<div id="popup-video-3" style="display:none;">
-    <iframe src="http://player.vimeo.com/video/18784105?title=0&byline=0&portrait=0" width="600" height="338" frameborder="0"></iframe>
-</div>
-<div id="popup-img-1" style="display:none;">
-    <img src="images/popups/image-1.png">
-</div>
-<div id="popup-img-2" style="display:none;">
-    <img src="images/popups/image-2.png">
-</div>
-<div id="popup-img-3" style="display:none;">
-    <img src="images/popups/image-3.png">
-</div><footer>
+<footer>
 	<section>
 		<p>Copyright © 2011 LocoChat. All rights reserved.</p>
 	</section>
