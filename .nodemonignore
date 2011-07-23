@@ -1,7 +1,7 @@
-public/*
-logs/*
-pids/*
-test/*
+./public/*
+./logs/*
+./pids/*
+./test/*
 *.sock
 cluster*
 
