@@ -6,3 +6,12 @@ body {
 a {
   color: #00B7FF;
 }
+
+#radar {
+  width: 480px;
+  float: left;
+}
+#messages {
+  width: 300px;
+  float: left;
+}

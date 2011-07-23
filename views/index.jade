@@ -1,2 +1,15 @@
 h1= title
 p Welcome to #{title}
+
+.clearfix
+  canvas#radar(width=480, height=480)
+  #messages
+    ul#message-list
+      li Hello world!
+      li Hello world!
+      li Hello world!
+      li Hello world!
+
+script
+
+  Locochat.init(#{params.userId});
