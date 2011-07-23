@@ -41,27 +41,19 @@ everyone.now.initUser = function(lat, lng, name) {
     lng: lng,
     name: name
   };
+  
   newUser.location.lat = lat;
   newUser.location.lng = lng;
   newUser.userId = this.user.clientId;
   newUser.name = name;
+  
   newUser.save(function(err, user) {
       if(errorCheck(err, 'User Save Error')) {
-        
         nowjs.getClient(user.userId, function() {
             stateVars[this.user.clientId].id = doc['_id'];
-            // console.log('doc=' + util.inspect(doc, true));
-            // console.log('this.now=' + util.inspect(this.now, true));
-            // console.log('doc._id=' + doc['_id']);
-            // this.user
-            // this.now.clientId = doc['_id'].toString();
         });
         
-        
         giveNearbyUsersToClient(user);
-        
-        
-        
       }
   });
 };
@@ -74,8 +66,6 @@ var giveNearbyUsersToClient = function (user) {
       loggedIn: true
   }, function(err, results) {
     if (errorCheck(err, 'Database Error')) {
-      // console.log('Got results');
-      // console.log(util.inspect(results, true));
       nowjs.getClient(user.userId, function() {
           this.now.onNearbyUsersUpdated(results)
       });
