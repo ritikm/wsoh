@@ -6,9 +6,17 @@
 var express = require('express');
 
 var app = module.exports = express.createServer();
+mongoose = require('mongoose');
+require('models');
 
 var nowjs = require("now");
 var everyone = nowjs.initialize(app);
+
+everyone.now.initUser = function() {
+  this.now.userId = this.user.clientId;
+  console.log(this.user.clientId);
+  
+}
 
 everyone.now.distribute = function(message) {
   everyone.now.receive(this.now.name, message);
