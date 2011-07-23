@@ -12,7 +12,7 @@ var Messages = new Schema({
 
 var Users = new Schema({
   userId : String,
-  name : String
+  name : String,
   location : Array,
   messages : [Messages],
   loggedIn : { type: Boolean, default: true, index: true }
