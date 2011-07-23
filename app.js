@@ -29,7 +29,7 @@ everyone.now.initUser = function() {
       return;
     }
     
-    db.executeDbCommand({
+    mongoose.connection.db.executeDbCommand({
       geoNear : 'Users',
       near : [this.now.lat, this.now.lng], 
       spherical : true,

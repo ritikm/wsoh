@@ -12,8 +12,9 @@ var Users = new Schema({
   name : String,
   location : { type: [Number], index: { loc: '2d' } },
   messages : [Messages],
-  loggedIn : { type: Boolean, default: true }
+  loggedIn : { type: Boolean, default: true, index: true }
 });
 
 User = mongoose.model('Users', Users);
 Message = mongoose.model('Messages', Messages);
+
