@@ -82,8 +82,6 @@ var Locochat = function() {
 
   function circle(ctx, ctrX, ctrY, radius) {
     ctx.beginPath();
-    console.log(ctrX);
-    console.log(ctrY);
     ctx.arc(ctrX, ctrY, radius, 0, Math.PI*2, true); 
     ctx.closePath();
     ctx.fill();
@@ -116,15 +114,17 @@ var Locochat = function() {
 
   function mockUpdateLocation() {
     updateLocation(
-      myUser.lat + 0.05 + (Math.random() - 0.5) * 0.1,
-      myUser.lng + 0.05 + (Math.random() - 0.5) * 0.1
+      myUser.lat + 0.07,
+      myUser.lng - 0.05
+      /*myUser.lat + 0.05 + (Math.random() - 0.5) * 0.1,*/
+      /*myUser.lng + 0.05 + (Math.random() - 0.5) * 0.1*/
     );
   }
   function updateLocation(lat, lng) {
     myUser.setPosition(lat, lng);
     now.move(lat, lng);
 
-    render();
+    /*render();*/
     popups.updatePositions();
   }
 
@@ -206,8 +206,9 @@ var Locochat = function() {
     var msgId = 'message-' + Math.floor(Math.random()*2147483647);
     var li = $('<li id="'+msgId+'" />');
     /*li.append(message.time+": ");*/
-    console.log(e.message.userId);
-    li.append(users.findById(e.message.userId).name + ": ");
+    /*console.log(e.message.userId);*/
+    li.append(e.message.userId + ": ");
+    /*li.append(users.findById(e.message.userId).name + ": ");*/
     li.append(e.message.body);
     $('#message-list').append(li);
     messageArea = $('#messages');
@@ -236,7 +237,7 @@ var Locochat = function() {
     });
   }
 
-  function sendChat(message) {
+  function sendChat(msg) {
     console.log("SEND: "+msg);
     now.sendMessage(msg);
 
@@ -253,23 +254,29 @@ var Locochat = function() {
     });
 
     now.onUserJoined = function (dbUser) {
+      console.log("User joined: "+dbUser.userId+" / "+dbUser.name);
       users.add(new User(dbUser.userId, dbUser.name,
             dbUser.location.lat, dbUser.location.lng));
     };
-    now.onUserLeft = function () {
+    now.onUserLeft = function (dbUser) {
+      console.log("User left: "+dbUser.userId);
       users.remove(dbUser.userId);
     };
     now.onUserMoved = function (dbUser) {
       var u = users.findById(dbUser.userId);
+      console.log("User moved: "+dbUser.userId);
       if (u) {
         u.lat = dbUser.location.lat;
         u.lng = dbUser.location.lng;
       } else {
-        console.log("Unknown user moved: "+dbUser.userId);
+        console.log("Unknown user : "+dbUser.userId);
       }
+
+      render();
     };
     
     now.onNearbyUsersUpdated = function (dbUsers) {
+      console.log("Users nearby updated");
       users.clear();
       _.each(dbUsers, function(dbUser) {
           users.add(new User(dbUser.userId, dbUser.name,
@@ -279,6 +286,7 @@ var Locochat = function() {
     };
     
     now.onChatReceived = function (dbUser, message) {
+      console.log("chat from "+dbUser.userId);
       messages.add(new Message(
             dbUser, message.text,
             message.location.lat, message.location.lng,

@@ -50,7 +50,7 @@ everyone.now.initUser = function(lat, lng, name) {
   newUser.save(function(err, user) {
       if(errorCheck(err, 'User Save Error')) {
         nowjs.getClient(user.userId, function() {
-            stateVars[this.user.clientId].id = doc['_id'];
+            stateVars[this.user.clientId].id = user['_id'];
         });
         
         giveNearbyUsersToClient(user);
@@ -82,7 +82,11 @@ var giveNearbyUsersToClient = function (user) {
 };
 
 everyone.now.move = function(lat, lng) {
-  User.findById(stateVars[this.user.clientId].id, function (error, user) {
+  console.log("Client id "+this.user.clientId);
+  console.log("Moving user "+stateVars[this.user.clientId].id);
+  User.findById(stateVars[this.user.clientId].id, function (err, user) {
+    if (errorCheck(err, 'Database Error')) {
+      console.log(user);
       user.location = {
         lat: lat,
         lng: lng
@@ -92,6 +96,10 @@ everyone.now.move = function(lat, lng) {
       stateVars[user.userId].lng = lng;
       
       user.save();
+
+giveNearbyUsersToClient(user); // TESTING
+
+      // Tell our neighbors we moved.
       User.find({
           location: {
             $near: [lat, lng],
@@ -109,10 +117,11 @@ everyone.now.move = function(lat, lng) {
           });
         }
       });
+    }
   });
 };
 
-everyone.now.unloadUser = function() {
+everyone.on('leave', function() {
   User.findById(stateVars[this.user.clientId].id, function (err, user) {
     if (errorCheck(err, 'Unload User Error')) {
       user.loggedIn = false;
@@ -137,7 +146,7 @@ everyone.now.unloadUser = function() {
       });
     }
   });
-};
+});
 
 everyone.now.sendMessage = function(message) {
   console.log('message: ' + message);
