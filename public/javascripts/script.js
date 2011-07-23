@@ -202,7 +202,7 @@ var Locochat = function() {
     },
     _positionMessage: function(message, el) {
       var u = users.findById(message.userId);
-      var pos = myUser.computeXY(u.lat, u.lng);
+      var pos = myUser.computeXY(message.lat, message.lng);
       el.css({ position: 'absolute',
         top: pos.y,
         left: pos.x
@@ -237,7 +237,8 @@ var Locochat = function() {
     var msgId = 'message-' + Math.floor(Math.random()*2147483647);
     var li = $('<li id="'+msgId+'" />');
     /*li.append(message.time+": ");*/
-    li.append("("+e.message.lat+","+e.message.lng+")");
+    console.log(e.message.userId);
+    li.append(users.findById(e.message.userId).name + ": ");
     li.append(e.message.body);
     $('#message-list').append(li);
     messageArea = $('#messages');
