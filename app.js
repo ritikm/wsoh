@@ -42,6 +42,8 @@ everyone.now.initUser = function() {
           console.log(util.inspect(err, true));
           return;
         }
+        
+        this.now.nearbyUsers = result;
     });
   });
 }
