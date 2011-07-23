@@ -4,7 +4,9 @@ mongoose.connect('mongo://chat:anadminpassword@localhost:27017/db');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.ObjectId;
 
-var test = new Schema();
+var test = new Schema({
+    test2: { type: Number }
+});
 
 var Messages = new mongoose.Schema({
   location : { lat: Number, lng: Number },
