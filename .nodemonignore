@@ -1,0 +1,7 @@
+public/*
+logs/*
+pids/*
+test/*
+*.sock
+cluster*
+
