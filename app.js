@@ -35,6 +35,7 @@ everyone.now.initUser = function() {
   newUser.name = this.now.name;
   newUser.save(function(err, doc) {
     if(errorCheck(err, 'User Save Error')) {
+      console.log("printing now..");
        console.log(util.inspect(that.now, true));
       that.now.stid = doc._id;
       User.find({
