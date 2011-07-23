@@ -10,11 +10,17 @@ var Locochat = function() {
     init: function() {
       this.store = {};
     },
+    clear: function() {
+      this.store = {};
+    },
     findById: function(userId) {
       return this.store[userId];
     },
     add: function(user) {
       this.store[user.userId] = user;
+    },
+    remove: function(userId) {
+      delete this.store[userId];
     },
     getAll: function() {
       return this.store;
@@ -104,26 +110,26 @@ var Locochat = function() {
       messages.add(new Message(david.userId, "I'm david", david.lat, david.lng, new Date()));
     }, 1500);
 
-    setInterval(updateLocation, 1000);
+    setInterval(mockUpdateLocation, 1000);
     setInterval(addRandomMessage, 2000);
   }
 
-  function updateLocation() {
-    console.log("Updating location => " + myUser.lat +","+myUser.lng);
-
-    myUser.setPosition(
-        myUser.lat + 0.05,
-        myUser.lng + 0.05);
-    
-    now.move(myUser.lat, myUser.lng);
-    
+  function mockUpdateLocation() {
+    updateLocation(
+      myUser.lat + 0.05 + (Math.random() - 0.5) * 0.1,
+      myUser.lng + 0.05 + (Math.random() - 0.5) * 0.1
+    );
+  }
+  function updateLocation(lat, lng) {
+    myUser.setPosition(lat, lng);
+    now.move(lat, lng);
 
     render();
     popups.updatePositions();
   }
 
   function addRandomMessage() {
-    console.log("Adding random message");
+    /*console.log("Adding random message");*/
 
     /*messages.add(new Message(myUser.userId, "HI", myUser.lat, myUser.lng, new Date()));*/
   }
@@ -215,12 +221,8 @@ var Locochat = function() {
       if (e.keyCode == 13) { // enter
         var msg = $('#chat').val();
 
-        if (msg) {
-          console.log("SEND: "+msg);
-          // TODO send to server
-          messages.add(new Message(myUser.userId, msg, myUser.lat, myUser.lng, new Date()));
-          now.distribute(msg);
-        }
+        if (msg)
+          sendChat(msg);
 
         $('#chat').val('');
         return false;
@@ -233,6 +235,14 @@ var Locochat = function() {
       $('#chat').focus();
     });
   }
+
+  function sendChat(message) {
+    console.log("SEND: "+msg);
+    now.sendMessage(msg);
+
+    // TESTING
+    /*messages.add(new Message(myUser.userId, msg, myUser.lat, myUser.lng, new Date()));*/
+  }
   
   
   function initNow() {
@@ -241,14 +251,29 @@ var Locochat = function() {
     $(window).bind('unload.now', function() {
       now.unloadUser();
     });
+
+    now.onUserJoined = function (user) {
+      users.add(new User(user.userId, user.name, user.lat, user.lng));
+    };
+    now.onUserLeft = function () {
+      users.remove(user.userId);
+    };
     
     now.onNearbyUsersUpdated = function (users) {
       users.clear();
-      users.
+      _.each(users, function(dbUser) {
+          users.add(new User(dbUser.userId, dbUser.name,
+              dbUser.location.lat, dbUser.location.lng));
+      });
+      render();
     };
     
-    now.broadcast = function (message) {
-      
+    now.onChatReceived = function (user, message) {
+      messages.add(new Message(
+            user, message.text,
+            message.location.lat, message.location.lng,
+            time
+          ));
     };
   }
   
@@ -276,7 +301,7 @@ var Locochat = function() {
   function setCoords(lat, lng, accuracy) {
     console.log("in setCoords");
     locationSet = true;
-    now.initUser(lat, lng);
+    now.initUser(lat, lng, "My Name "+Math.random());
     console.log("init user");
   }
 
