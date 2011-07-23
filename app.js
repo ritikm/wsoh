@@ -35,7 +35,10 @@ everyone.now.initUser = function() {
   newUser.name = this.now.name;
   newUser.save(function(err, doc) {
     if(errorCheck(err, 'User Save Error')) {
+      
       nowjs.getClient(that.now.userId, function() {
+        console.log('doc=' + util.inspect(doc, true));
+        console.log('this.now=' + util.inspect(this.now, true));
         this.now.clientId = doc._id;
       });
       
