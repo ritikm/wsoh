@@ -1,17 +1,17 @@
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.ObjectId;
 
-var Messages = new mongoose.Schema({
+var Messages = new Schema({
   //location : Array,
-  user : mongoose.ObjectId,
+  user : ObjectId,
   time : Number
 });
 
-var Users = new mongoose.Schema({
+var Users = new Schema({
   userId : String,
   name : String,
   //location : Array,
-  messages : [Messages],
+  //messages : [Messages],
   loggedIn : { type: Boolean, default: true, index: true }
 });
 
