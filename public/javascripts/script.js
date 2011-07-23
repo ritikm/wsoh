@@ -25,7 +25,7 @@ function initialize() {
     setCoords(37.414346, -122.076902, 16);
   }
 }
-now.nearbyUsers = function (results) {
+now.getNearbyUsers = function (results) {
   
 };
 function setCoords(lat, lng, accuracy) {
