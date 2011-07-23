@@ -9,7 +9,7 @@ var test = new Schema({
 });
 
 var Messages = new mongoose.Schema({
-  location : [Number, Number],
+  location : [Number],
   user : mongoose.ObjectId,
   time : Number
 });
@@ -17,7 +17,7 @@ var Messages = new mongoose.Schema({
 var Users = new mongoose.Schema({
   userId : String,
   name : String,
-  location : [Number, Number],
+  location : [Number],
   messages : [Messages],
   loggedIn : { type: Boolean, default: true, index: true }
 });
