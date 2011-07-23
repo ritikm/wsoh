@@ -1,2 +1,31 @@
 h1= title
 p Welcome to #{title}
+
+.clearfix
+  canvas#radar
+  #messages
+    ul#message-list
+      li Hello world!
+      li Hello world!
+      li Hello world!
+      li Hello world!
+
+script
+  var Locochat = function() {
+    var canvas, ctx;
+    var w, h;
+
+    function init() {
+      canvas = $('#radar');
+      w = canvas.width(); h = canvas.height();
+      ctx = canvas[0].getContext('2d');
+
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, w, h);
+    }
+    
+    return {
+      init: init,
+    };
+  }();
+  Locochat.init();
