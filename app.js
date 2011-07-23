@@ -15,11 +15,11 @@ var everyone = nowjs.initialize(app);
 everyone.now.initUser = function() {
   this.now.userId = this.user.clientId;
   console.log(this.user.clientId);
-  
-}
+};
 
 everyone.now.distribute = function(message) {
   everyone.now.receive(this.now.name, message);
+  
 };
 
 // Configuration

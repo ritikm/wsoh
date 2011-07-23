@@ -10,7 +10,7 @@ var Messages = new Schema({
 var Users = new Schema({
   userId : String,
   name : String,
-  location : [Number],
+  location : { type: [Number], index: { loc: '2d' } }
   messages : [Messages]
 });
 
