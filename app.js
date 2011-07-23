@@ -8,6 +8,8 @@ var util = require('util');
 
 var async = require('async');
 
+var stateVars = {};
+
 var app = module.exports = express.createServer();
 
 require('./models');
@@ -23,50 +25,63 @@ var errorCheck = function(err, data) {
   }
   
   return true;
-}
+};
 
-everyone.now.initUser = function() {
+everyone.now.initUser = function(lat, lng) {
   console.log('In initUser');
   var that = this;
   console.log(this.user.clientId);
   
   var newUser = new User();
-  newUser.location.lat = this.now.lat;
-  newUser.location.lng = this.now.lng;
-  newUser.userId = this.now.userId = this.user.clientId;
-  // newUser._id = this.user.clientId;
+  
+  stateVars[this.user.clientId] = {
+    userId: this.user.clientId,
+    lat: lat,
+    lng: lng
+  };
+  newUser.location.lat = lat;
+  newUser.location.lng = lng;
+  newUser.userId = this.user.clientId;
   newUser.name = this.now.name;
-  newUser.save(function(err, doc) {
+  newUser.save(function(err, user) {
     if(errorCheck(err, 'User Save Error')) {
       
-      nowjs.getClient(that.now.userId, function() {
-        console.log('doc=' + util.inspect(doc, true));
-        console.log('this.now=' + util.inspect(this.now, true));
-        console.log('doc._id=' + doc['_id']);
-        this.user
+      nowjs.getClient(user.userId, function() {
+        // console.log('doc=' + util.inspect(doc, true));
+        // console.log('this.now=' + util.inspect(this.now, true));
+        // console.log('doc._id=' + doc['_id']);
+        // this.user
         // this.now.clientId = doc['_id'].toString();
       });
       
-      User.find({
+      giveNearbyUsersToClient(user);
+      
+    
+
+  });
+}
+var giveNearbyUsersToClient = function (user) {
+  User.find({
         location: {
-          $near: [that.now.lat, that.now.lng],
+          $near: [stateVars[user.userId].lat, stateVars[user.userId].lng],
           $maxDistance: 5
         },
         loggedIn: true
       }, function(err, results) {
         if (errorCheck(err, 'Database Error')) {
-            console.log('Got results');
-            console.log(util.inspect(results, true));
-            nowjs.getClient(that.now.userId, function() {
-              this.now.getNearbyUsers(results)
+            // console.log('Got results');
+            // console.log(util.inspect(results, true));
+            nowjs.getClient(user.userId, function() {
+              this.now.onNearbyUsersUpdated(results)
             });
           }
       });
     }
-    
+};
 
-  });
-}
+everyone.now.move = function(lat, lng) {
+  
+};
 
 everyone.now.unloadUser = function() {
   User.findById(this.now.id, function (err, user) {
@@ -96,7 +111,19 @@ everyone.now.distribute = function(message) {
             });
           }
       });
-  
+  User.find({
+      userId: this.user.clientId
+  }, function (error, user) {
+  var message = new Message();
+  message.location = {
+    lat: stateVars[user.userId].lat,
+    lng: stateVars[user.userId].lng
+  }
+  message.time = new Date().getTime()
+  message.user = user;
+  message.text = message;
+  message.save();
+  }
 };
 
 // Configuration

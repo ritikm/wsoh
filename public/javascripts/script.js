@@ -1,52 +1,4 @@
 
-now.ready(initialize);
-var locationSet = false;
-$(window).bind('unload.now', function() {
-  now.unloadUser();
-});
-function initialize() {
-  console.log('In Initialize');
-  if(navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        console.log("before set coord");
-        setCoords(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
-      }, 
-      function() {
-        handleNoGeolocation(true);
-      });
-  } else {
-    handleNoGeolocation(false);
-  }
-  
-  function handleNoGeolocation(browserSupportFlag) {
-    now.noGeolocation = true;
-    now.browserSupportFlag = browserSupportFlag;
-    setCoords(37.414346, -122.076902, 16);
-  }
-}
-
-now.getNearbyUsers = function (results) {
-  
-};
-
-now.broadcast = function (message) {
-  
-};
-
-function setCoords(lat, lng, accuracy) {
-  console.log("in setCoords");
-  now.lat = lat;
-  now.lng = lng;
-  now.accuracy = accuracy;
-  locationSet = true;
-  console.log(now);
-  now.initUser();
-  console.log("init user");
-  console.log(now);
-}
-
-var messages = [];
 var myUser;
 
 var pixels_per_degree = 100;
@@ -131,8 +83,10 @@ var Locochat = function() {
     ctx.fill();
   }
 
-  function init(myUserId) {
-    myUser = new User(myUserId, "Me", 5, 5);
+  function init() {
+    initNow();
+    
+    myUser = new User(now.userId, "Me", 5, 5);
 
     users.add(myUser);
 
@@ -160,6 +114,9 @@ var Locochat = function() {
     myUser.setPosition(
         myUser.lat + 0.05,
         myUser.lng + 0.05);
+    
+    now.move(myUser.lat, myUser.lng);
+    
 
     render();
     popups.updatePositions();
@@ -275,6 +232,53 @@ var Locochat = function() {
       $('#chat').focus();
     });
   }
+  
+  
+  function initNow() {
+    now.ready(initialize);
+    var locationSet = false;
+    $(window).bind('unload.now', function() {
+      now.unloadUser();
+    });
+    
+    now.onNearbyUsersUpdated = function (users) {
+      users.clear();
+      users.
+    };
+    
+    now.broadcast = function (message) {
+      
+    };
+  }
+  
+  function initialize() {
+    console.log('In Initialize');
+    if(navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          console.log("before set coord");
+          setCoords(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+        }, 
+        function() {
+          handleNoGeolocation(true);
+        });
+    } else {
+      handleNoGeolocation(false);
+    }
+    
+    function handleNoGeolocation(browserSupportFlag) {
+      now.noGeolocation = true;
+      now.browserSupportFlag = browserSupportFlag;
+      setCoords(37.414346, -122.076902, 16);
+    }
+  }
+  function setCoords(lat, lng, accuracy) {
+    console.log("in setCoords");
+    locationSet = true;
+    now.initUser(lat, lng);
+    console.log("init user");
+  }
+
   
   return {
     init: init,

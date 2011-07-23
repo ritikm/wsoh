@@ -7,6 +7,7 @@ var ObjectId = Schema.ObjectId;
 var Messages = new Schema({
   location : { lat: Number, lng: Number },
   user : ObjectId,
+  text: String,
   time : Number
 });
 
