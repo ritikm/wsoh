@@ -1,13 +1,13 @@
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.ObjectId;
 
-var Messages = new Schema({
+var Messages = new mongoose.Schema({
   location : { lat: Number, lng: Number },
-  user : ObjectId,
+  user : mongoose.ObjectId,
   time : Number
 });
 
-var Users = new Schema({
+var Users = new mongoose.Schema({
   userId : String,
   name : String,
   location : { lat: Number, lng: Number },
