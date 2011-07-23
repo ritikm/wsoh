@@ -147,9 +147,9 @@ var Locochat = function() {
 
     allusers = users.getAll();
     for (var userid in users.getAll()) {
-      var u = users.findById(userid);
-      if (u == myUser)
+      if (userid == myUser.userId)
         continue;
+      var u = users.findById(userid);
       console.log("Hi user "+userid);console.log(u);
       var pos = myUser.computeXY(u.lat, u.lng);
       ctx.fillStyle = "red";
@@ -290,7 +290,8 @@ var Locochat = function() {
       messages.add(new Message(
             dbUser, message.text,
             message.location.lat, message.location.lng,
-            time
+            new Date()
+            /*time*/
           ));
     };
   }
