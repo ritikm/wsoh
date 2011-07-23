@@ -13,7 +13,9 @@ function initialize() {
   }
   
   function handleNoGeolocation(browserSupportFlag) {
-    
+    now.noGeolocation = true;
+    now.browserSupportFlag = browserSupportFlag;
+    setCoords(37.414346, -122.076902, 16);
   }
 }
 
@@ -24,3 +26,4 @@ function setCoords(lat, lng, accuracy) {
   locationSet = true;
   now.initUser();
 }
+
