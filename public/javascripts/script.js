@@ -261,6 +261,7 @@ var Locochat = function() {
           console.log("SEND: "+msg);
           // TODO send to server
           messages.add(new Message(myUser.userId, msg, myUser.lat, myUser.lng, new Date()));
+          now.distribute(msg);
         }
 
         $('#chat').val('');

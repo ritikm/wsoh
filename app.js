@@ -78,6 +78,7 @@ everyone.now.unloadUser = function() {
 };
 
 everyone.now.distribute = function(message) {
+  console.log('message: ' + message);
   User.find({
         location: {
           $near: [this.now.lat, this.now.lng],
@@ -95,6 +96,7 @@ everyone.now.distribute = function(message) {
             });
           }
       });
+  
 };
 
 // Configuration
